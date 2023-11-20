@@ -158,7 +158,7 @@ public class BoardPage extends JFrame {
     }
 
     private boolean loadGameLevel() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("game_level1.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("game_level.txt"))) {
             for (int i = 0; i < 5; i++) {
                 String line = reader.readLine();
                 if (line != null) {
@@ -182,7 +182,13 @@ public class BoardPage extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION) {
-            // Clear the game grid
+            // Check if there is a saved game and load it
+            if (loadGameLevel()) {
+                // If loading is successful, no need to clear the grid
+                return;
+            }
+
+            // Clear the game grid if there is no saved game or loading failed
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     buttons[i][j].setText("");
@@ -190,6 +196,7 @@ public class BoardPage extends JFrame {
             }
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
