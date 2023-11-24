@@ -165,6 +165,13 @@ public class BoardPage extends JFrame {
                     for (int j = 0; j < Math.min(line.length(), 5); j++) {
                         String cellState = String.valueOf(line.charAt(j));
                         buttons[i][j].setText(cellState);
+
+                        // Enable or disable buttons based on cell state
+                        if (cellState.equals("E")) {
+                            buttons[i][j].setEnabled(true); // Enable empty cells
+                        } else {
+                            buttons[i][j].setEnabled(false); // Disable non-empty cells
+                        }
                     }
                 }
             }
@@ -174,6 +181,7 @@ public class BoardPage extends JFrame {
             return false; // Loading failed
         }
     }
+
 
     private void startNewGame() {
         int option = JOptionPane.showConfirmDialog(this,
