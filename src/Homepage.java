@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 public class Homepage {
     private JFrame frame;
+    private static String selectedSize;
     private JComboBox<String> choiceComboBox;
     private JComboBox<String> sizeComboBox;
 
@@ -33,20 +34,19 @@ public class Homepage {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Redirect to BoardPage when the button is clicked
-                frame.dispose(); // Close the current frame
-                new BoardPage().setVisible(true); // Open the BoardPage
+                selectedSize = (String) sizeComboBox.getSelectedItem();
+                if (selectedSize != null) {
+                    frame.dispose();
+                    new BoardPage(selectedSize).setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Please select a board size.");
+                }
             }
         });
-        newGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Add your logic for starting a new game
-                // For now, you can just display a message
-                JOptionPane.showMessageDialog(frame, "New game started!");
-            }
-        });
+
         JButton humanButton = new JButton("Human");
         humanButton.setPreferredSize(new Dimension(80, 30));
+
 
         // Add "VS" label
         JLabel vsLabel = new JLabel("VS");
@@ -57,13 +57,35 @@ public class Homepage {
         choiceComboBox = new JComboBox<>(choices);
         choiceComboBox.setPreferredSize(new Dimension(90, 30));
 
+
+
         // Create a panel for size board
         JPanel sizePanel = new JPanel();
         JLabel sizeLabel = new JLabel("Size Board: ");
-        String[] sizeOptions = {"3x3", "8x8"};
+        String[] sizeOptions = {"2x2", "3x3","4x4","5x5"};
         sizeComboBox = new JComboBox<>(sizeOptions);
         sizePanel.add(sizeLabel);
         sizePanel.add(sizeComboBox);
+
+
+
+
+
+        choiceComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedSize = (String) sizeComboBox.getSelectedItem();
+                if (selectedSize != null) {
+                    // Transférer la taille sélectionnée à BoardPage
+                    new BoardPage(selectedSize);
+                }
+
+            }
+        });
+
+
+
+
 
         // Add components to the center panel
 
@@ -86,6 +108,10 @@ public class Homepage {
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
+    public static String getSelectedSize() {
+        return selectedSize;
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

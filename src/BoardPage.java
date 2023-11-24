@@ -9,14 +9,16 @@ import java.io.*;
 public class BoardPage extends JFrame {
     private JButton[][] buttons;
     private char currentPlayer;
+    private int boardSize;
 
-    public BoardPage() {
-        buttons = new JButton[5][5];
+    public BoardPage(String selectedSize) {
+        boardSize = Integer.parseInt(selectedSize.substring(0, 1));
+        buttons = new JButton[boardSize + 1][boardSize + 1];
         currentPlayer = 'H'; // 'H' for horizontal, 'V' for vertical
-
         initializeUI();
         loadGameLevel(); // Load the game level at the start
     }
+
 
     private void initializeUI() {
         setTitle("Domineering Game");
@@ -27,8 +29,8 @@ public class BoardPage extends JFrame {
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(5, 5));
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i <= boardSize; i++) {
+            for (int j = 0; j <= boardSize; j++) {
                 buttons[i][j] = new JButton();
                 buttons[i][j].setFont(new Font("Arial", Font.PLAIN, 20));
                 buttons[i][j].addActionListener(new ButtonClickListener());
@@ -74,8 +76,8 @@ public class BoardPage extends JFrame {
             int row = -1, col = -1;
 
             // Find the clicked button's position in the grid
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 5; j++) {
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize; j++) {
                     if (buttons[i][j] == clickedButton) {
                         row = i;
                         col = j;
@@ -116,8 +118,8 @@ public class BoardPage extends JFrame {
     private void showHint() {
         // Find an empty spot where the player can place a domino
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < boardSize-1; i++) {
+            for (int j = 0; j < boardSize-1; j++) {
                 if (buttons[i][j].getText().isEmpty() && buttons[i + 1][j].getText().isEmpty()) {
                     // Suggest a horizontal move
                     suggestHint(i, j, i + 1, j);
@@ -145,8 +147,8 @@ public class BoardPage extends JFrame {
 
     private void saveGameLevel() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("game_level.txt"))) {
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 5; j++) {
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize; j++) {
                     String cellState = buttons[i][j].getText().isEmpty() ? "E" : buttons[i][j].getText(); // "E" for empty
                     writer.write(cellState);
                 }
@@ -159,10 +161,10 @@ public class BoardPage extends JFrame {
 
     private boolean loadGameLevel() {
         try (BufferedReader reader = new BufferedReader(new FileReader("game_level.txt"))) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < boardSize; i++) {
                 String line = reader.readLine();
                 if (line != null) {
-                    for (int j = 0; j < Math.min(line.length(), 5); j++) {
+                    for (int j = 0; j < Math.min(line.length(), boardSize); j++) {
                         String cellState = String.valueOf(line.charAt(j));
                         buttons[i][j].setText(cellState);
 
@@ -197,8 +199,8 @@ public class BoardPage extends JFrame {
             }
 
             // Clear the game grid if there is no saved game or loading failed
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 5; j++) {
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize; j++) {
                     buttons[i][j].setText("");
                 }
             }
@@ -208,8 +210,8 @@ public class BoardPage extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardPage domineeringGame = new BoardPage();
-            domineeringGame.setLocationRelativeTo(null); // Center the window on the screen
+            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedSize());
+            domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });
     }
