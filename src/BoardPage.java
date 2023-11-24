@@ -147,7 +147,7 @@ public class BoardPage extends JFrame {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("game_level.txt"))) {
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
-                    String cellState = buttons[i][j].getText().isEmpty() ? "E" : buttons[i][j].getText(); // "E" for empty
+                    String cellState = buttons[i][j].getText().isEmpty() ? " " : buttons[i][j].getText(); // " " for empty
                     writer.write(cellState);
                 }
                 writer.newLine();
@@ -166,12 +166,8 @@ public class BoardPage extends JFrame {
                         String cellState = String.valueOf(line.charAt(j));
                         buttons[i][j].setText(cellState);
 
-                        // Enable or disable buttons based on cell state
-                        if (cellState.equals("E")) {
-                            buttons[i][j].setEnabled(true); // Enable empty cells
-                        } else {
-                            buttons[i][j].setEnabled(false); // Disable non-empty cells
-                        }
+                        // Enable all buttons after loading
+                        buttons[i][j].setEnabled(true);
                     }
                 }
             }
