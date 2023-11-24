@@ -18,14 +18,8 @@ public class Homepage {
 
         // Create a panel for the top right corner
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton exitButton = new JButton("X");
-        exitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-        topPanel.add(exitButton);
+
+
 
         // Add topPanel to the main panel at the PAGE_START position
         mainPanel.add(topPanel, BorderLayout.PAGE_START);
@@ -51,6 +45,8 @@ public class Homepage {
                 JOptionPane.showMessageDialog(frame, "New game started!");
             }
         });
+        JButton humanButton = new JButton("Human");
+        humanButton.setPreferredSize(new Dimension(80, 30));
 
         // Add "VS" label
         JLabel vsLabel = new JLabel("VS");
@@ -70,11 +66,15 @@ public class Homepage {
         sizePanel.add(sizeComboBox);
 
         // Add components to the center panel
-        //centerPanel.add(titleLabel);
-        centerPanel.add(newGameButton); // Add the "Start a New Game" button
+
+        centerPanel.add(humanButton);
+
         centerPanel.add(vsLabel);
+
         centerPanel.add(choiceComboBox);
+
         centerPanel.add(sizePanel);
+        centerPanel.add(newGameButton);
 
         // Add centerPanel to the main panel at the CENTER position
         mainPanel.add(centerPanel, BorderLayout.CENTER);
