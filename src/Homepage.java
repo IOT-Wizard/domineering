@@ -39,7 +39,7 @@ public class Homepage {
                 selectedSize = (String) sizeComboBox.getSelectedItem();
                 if (selectedSize != null) {
                     frame.dispose();
-                    new BoardPage(selectedSize, player).setVisible(true);
+                    new BoardH(selectedSize, player).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Please select a board size.");
                 }

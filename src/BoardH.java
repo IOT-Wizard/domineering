@@ -90,18 +90,21 @@ public class BoardH extends JFrame {
             }
 
             if (isValidMove(row, col)) {
-                boolean win = wonPosition(currentPlayer);
 
-                if (win) {
-                    String winnerMessage = (currentPlayer.equals("H")) ? "Human wins!" : "H wins!";
-                    JOptionPane.showMessageDialog(getParent(), winnerMessage);
-                }
                 if (currentPlayer == "H") {
                     buttons[row][col].setText("HH");
                     buttons[row + 1][col].setText("HH");
                 } else {
                     buttons[row][col].setText("VV");
                     buttons[row][col + 1].setText("VV");
+                }
+                boolean win = wonPosition(currentPlayer);
+
+                if (win == true) {
+                    if (currentPlayer == "H")  JOptionPane.showMessageDialog(getParent(), " player 1 win ");
+                    if (currentPlayer == "Human")  JOptionPane.showMessageDialog(getParent(), " player 2 win ");
+
+
                 }
 
                 // Switch players
@@ -128,8 +131,8 @@ public class BoardH extends JFrame {
 
     public boolean wonPosition(
             String player){
-        if(player == "H"){
-            for (int i = 0; i < 5; i++) { // taille = 5
+        if(player == "Human"){
+            for (int i = 0; i < 4; i++) { // taille = 5
                 for (int j = 0; j < 5 ; j++) {
                     if (i == 4) {//taille -1
                         continue;
@@ -141,10 +144,8 @@ public class BoardH extends JFrame {
         }
         else {
             for (int i = 0; i < 5; i++) { // taille = 5
-                for (int j = 0; j < 5 ; j++) {
-                    if (j == 4) { // taille -1
-                        continue;
-                    } else if (buttons[i][j].getText().equals("") && buttons[i][j + 1].getText().equals("")) {
+                for (int j = 0; j < 4 ; j++) {
+                     if (buttons[i][j].getText().equals("") && buttons[i][j + 1].getText().equals("")) {
                         return false;
                     }
                 }
@@ -249,7 +250,7 @@ public class BoardH extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardH domineeringGame = new BoardH("5" , "Human");
+            BoardH domineeringGame = new BoardH(Homepage.getSelectedSize() , Homepage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });
