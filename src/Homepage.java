@@ -5,21 +5,19 @@ import java.awt.event.ActionListener;
 
 public class Homepage {
     private JFrame frame;
-    private static String selectedSize;
     private JComboBox<String> choiceComboBox;
-    private JComboBox<String> sizeComboBox;
+
 
     public Homepage() {
         frame = new JFrame("AI Home Page");
-        frame.setSize(400, 200);
+        frame.setSize(400, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and set layout manager
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         // Create a panel for the top right corner
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
+        JPanel topPanel = new JPanel(new FlowLayout());
 
 
         // Add topPanel to the main panel at the PAGE_START position
@@ -34,13 +32,16 @@ public class Homepage {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Redirect to BoardPage when the button is clicked
-                selectedSize = (String) sizeComboBox.getSelectedItem();
-                if (selectedSize != null) {
-                    frame.dispose();
-                    new BoardPage(selectedSize).setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Please select a board size.");
-                }
+                frame.dispose(); // Close the current frame
+                new BoardPage().setVisible(true); // Open the BoardPage
+            }
+        });
+        newGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Add your logic for starting a new game
+                // For now, you can just display a message
+                JOptionPane.showMessageDialog(frame, "New game started!");
             }
         });
 
@@ -58,45 +59,11 @@ public class Homepage {
         choiceComboBox.setPreferredSize(new Dimension(90, 30));
 
 
-
-        // Create a panel for size board
-        JPanel sizePanel = new JPanel();
-        JLabel sizeLabel = new JLabel("Size Board: ");
-        String[] sizeOptions = {"2x2", "3x3","4x4","5x5"};
-        sizeComboBox = new JComboBox<>(sizeOptions);
-        sizePanel.add(sizeLabel);
-        sizePanel.add(sizeComboBox);
-
-
-
-
-
-        choiceComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedSize = (String) sizeComboBox.getSelectedItem();
-                if (selectedSize != null) {
-                    // Transférer la taille sélectionnée à BoardPage
-                    new BoardPage(selectedSize);
-                }
-
-            }
-        });
-
-
-
-
-
-        // Add components to the center panel
-
         centerPanel.add(humanButton);
-
         centerPanel.add(vsLabel);
-
         centerPanel.add(choiceComboBox);
-
-        centerPanel.add(sizePanel);
         centerPanel.add(newGameButton);
+
 
         // Add centerPanel to the main panel at the CENTER position
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -108,10 +75,6 @@ public class Homepage {
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
-    public static String getSelectedSize() {
-        return selectedSize;
-    }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
