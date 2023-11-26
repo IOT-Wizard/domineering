@@ -91,6 +91,6 @@ public class HomePage {
             public void run() {
                 new HomePage();
             }
-  });
-}
+        });
+    }
 }
