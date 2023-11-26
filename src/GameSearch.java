@@ -92,6 +92,8 @@ public abstract class GameSearch {
         }
         return v3;
     }
+
+
     public void playGame(Position startingPosition, boolean humanPlayFirst) {
         if (humanPlayFirst == false) {
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
@@ -132,7 +134,7 @@ public abstract class GameSearch {
             }
              /*
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
-            
+
             Enumeration enum2 = v.elements();
             while (enum2.hasMoreElements()) {
                 System.out.println(" next element: " + enum2.nextElement());
