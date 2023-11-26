@@ -13,7 +13,7 @@ public class BoardPage extends JFrame {
 
     public BoardPage(String selectedSize) {
         boardSize = Integer.parseInt(selectedSize.substring(0, 1));
-        buttons = new JButton[boardSize + 1][boardSize + 1];
+        buttons = new JButton[boardSize][boardSize];
         currentPlayer = 'H'; // 'H' for horizontal, 'V' for vertical
         initializeUI();
         loadGameLevel(); // Load the game level at the start
@@ -29,8 +29,8 @@ public class BoardPage extends JFrame {
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(5, 5));
 
-        for (int i = 0; i <= boardSize; i++) {
-            for (int j = 0; j <= boardSize; j++) {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 buttons[i][j] = new JButton();
                 buttons[i][j].setFont(new Font("Arial", Font.PLAIN, 20));
                 buttons[i][j].addActionListener(new ButtonClickListener());
@@ -103,7 +103,7 @@ public class BoardPage extends JFrame {
 
     private boolean isValidMove(int row, int col) {
         // Check if the move is within the bounds and the selected cells are empty
-        if (row >= 0 && row < 4 && col >= 0 && col < 4) {
+        if (row >= 0 && row < boardSize - 1 && col >= 0 && col < boardSize - 1) {
             if (currentPlayer == 'H' &&
                     buttons[row][col].getText().equals("") &&
                     buttons[row + 1][col].getText().equals("")) {
@@ -114,6 +114,7 @@ public class BoardPage extends JFrame {
         }
         return false;
     }
+
 
     private void showHint() {
         // Find an empty spot where the player can place a domino
