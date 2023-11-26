@@ -16,6 +16,9 @@ public abstract class GameSearch {
 
     public static boolean PROGRAM = false;
     public static boolean HUMAN = true;
+    public static boolean HUMAN2 = true;
+
+
 
     /**
      *  Notes:  PROGRAM false -1,  HUMAN true 1
@@ -132,7 +135,7 @@ public abstract class GameSearch {
             }
              /*
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
-            
+
             Enumeration enum2 = v.elements();
             while (enum2.hasMoreElements()) {
                 System.out.println(" next element: " + enum2.nextElement());

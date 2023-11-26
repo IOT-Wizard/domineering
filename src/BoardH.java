@@ -5,22 +5,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-
-
-
-public class BoardPage extends JFrame {
+public class BoardH extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
     private int boardSize;
 
-    public BoardPage(String selectedSize , String player) {
-        System.out.println(player);
-
+    public BoardH(String selectedSize , String player) {
         boardSize = Integer.parseInt(selectedSize.substring(0, 1));
         buttons = new JButton[boardSize][boardSize];
-        currentPlayer = player ; // 'H' for horizontal, 'V' for vertical
+        currentPlayer = "H" ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
-        loadGameLevel(); // Load the game level at the start
+        //loadGameLevel(); // Load the game level at the start
     }
 
 
@@ -38,7 +33,9 @@ public class BoardPage extends JFrame {
                 buttons[i][j] = new JButton();
                 buttons[i][j].setFont(new Font("Arial", Font.PLAIN, 20));
                 buttons[i][j].addActionListener(new ButtonClickListener());
+                buttons[i][j].setBackground(Color.white);
                 gamePanel.add(buttons[i][j]);
+
             }
         }
 
@@ -73,9 +70,12 @@ public class BoardPage extends JFrame {
     }
 
     private class ButtonClickListener implements ActionListener {
+
+
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
+
             int row = -1, col = -1;
 
             // Find the clicked button's position in the grid
@@ -90,6 +90,9 @@ public class BoardPage extends JFrame {
             }
 
             if (isValidMove(row, col)) {
+                boolean win = wonPosition(currentPlayer);
+
+
                 if (currentPlayer == "H") {
                     buttons[row][col].setText("HH");
                     buttons[row + 1][col].setText("HH");
@@ -97,27 +100,60 @@ public class BoardPage extends JFrame {
                     buttons[row][col].setText("VV");
                     buttons[row][col + 1].setText("VV");
                 }
+                if (win) {
+                    String winnerMessage = (currentPlayer.equals("H")) ? "Human wins!" : "H wins!";
+                    JOptionPane.showMessageDialog(getParent(), winnerMessage);
+                }
 
                 // Switch players
-                currentPlayer = (currentPlayer == "H") ? "V" : "H";
+                currentPlayer = (currentPlayer == "H") ? "Human" : "H";
             }
         }
     }
 
     private boolean isValidMove(int row, int col) {
         // Check if the move is within the bounds and the selected cells are empty
-        if (row >= 0 && row < boardSize - 1 && col >= 0 && col < boardSize - 1) {
-            if (currentPlayer == "H" &&
-                    buttons[row][col].getText().equals("") &&
-                    buttons[row + 1][col].getText().equals("")) {
+        if (row >= 0 && row <= boardSize - 1 && col >= 0 && col <= boardSize - 1) {
+            if (currentPlayer == "H" && buttons[row][col].getText().equals("") && buttons[row + 1][col].getText().equals("")) {
                 return true;
-            } else return currentPlayer == "V" &&
-                    buttons[row][col].getText().equals("") &&
-                    buttons[row][col + 1].getText().equals("");
+            } else
+                if (currentPlayer == "Human" && buttons[row][col].getText().equals("") && buttons[row][col + 1].getText().equals("")){
+                return  true ;
+            }
+
+
         }
         return false;
     }
 
+
+    public boolean wonPosition(
+            String player){
+        if(player == "H"){
+            for (int i = 0; i < 5; i++) { // taille = 5
+                for (int j = 0; j < 5 ; j++) {
+                    if (i == 4) {//taille -1
+                        continue;
+                    } else if (buttons[i][j].getText().equals("") && buttons[i+1][j].getText().equals("")) {
+                        return false;
+                    }
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < 5; i++) { // taille = 5
+                for (int j = 0; j < 5 ; j++) {
+                    if (j == 4) { // taille -1
+                        continue;
+                    } else if (buttons[i][j].getText().equals("") && buttons[i][j + 1].getText().equals("")) {
+                        return false;
+                    }
+                }
+            }
+
+        }
+        return  true ;
+    }
 
     private void showHint() {
         // Find an empty spot where the player can place a domino
@@ -214,8 +250,7 @@ public class BoardPage extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-
-            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedSize() , Homepage.getSelectedPlayer());
+            BoardH domineeringGame = new BoardH("5" , "Human");
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });
