@@ -15,6 +15,7 @@ public class BoardH extends JFrame {
         buttons = new JButton[boardSize][boardSize];
         currentPlayer = "H" ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
+        System.out.println(player);
         //loadGameLevel(); // Load the game level at the start
     }
 
@@ -29,7 +30,7 @@ public class BoardH extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                startNewGame();
+               // startNewGame();
             }
         });
         // Create a panel to hold the game grid
@@ -199,7 +200,16 @@ public class BoardH extends JFrame {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("game_level.txt"))) {
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize; j++) {
-                    String cellState = buttons[i][j].getText().isEmpty() ? "E" : buttons[i][j].getText(); // "E" for empty
+                    String cellState;
+                    Color backgroundColor = buttons[i][j].getBackground();
+                    if (backgroundColor.equals(new Color(0x8D0808)) || backgroundColor.equals(new Color(0x070707))) {
+                        // Save the colors for non-empty cells (black or red)
+                        cellState = backgroundColor.equals(new Color(0x8D0808)) ? "H" : "V";
+                    } else {
+                        // Save "0" for empty cells
+                        cellState = "0";
+                    }
+
                     writer.write(cellState);
                 }
                 writer.newLine();
@@ -216,10 +226,24 @@ public class BoardH extends JFrame {
                 if (line != null) {
                     for (int j = 0; j < Math.min(line.length(), boardSize); j++) {
                         String cellState = String.valueOf(line.charAt(j));
-                        buttons[i][j].setText(cellState);
+
+                        // Update the button based on the saved cellState
+                        if (cellState.equals("H")) {
+                            buttons[i][j].setBackground(new Color(0x8D0808));
+                            buttons[i + 1][j].setBackground(new Color(0x8D0808));
+                        } else if (cellState.equals("V")) {
+                            buttons[i][j].setBackground(new Color(0x070707));
+                            buttons[i][j + 1].setBackground(new Color(0x070707));
+                        } else {
+                            // "0" represents empty cells
+                            buttons[i][j].setBackground(Color.WHITE);
+                            buttons[i + 1][j].setBackground(Color.WHITE);
+                            buttons[i][j + 1].setBackground(Color.WHITE);
+                            buttons[i + 1][j + 1].setBackground(Color.WHITE);
+                        }
 
                         // Enable or disable buttons based on cell state
-                        if (cellState.equals("E")) {
+                        if (cellState.equals("0")) {
                             buttons[i][j].setEnabled(true); // Enable empty cells
                         } else {
                             buttons[i][j].setEnabled(false); // Disable non-empty cells
@@ -235,9 +259,11 @@ public class BoardH extends JFrame {
     }
 
 
+
+
     private void startNewGame() {
         int option = JOptionPane.showConfirmDialog(this,
-                "Do you want to start a new game without saving the current one?",
+                "save the game ?",
                 "Start New Game",
                 JOptionPane.YES_NO_OPTION);
 
