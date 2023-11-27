@@ -3,11 +3,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class HomePage extends JFrame{
+public class HomePage {
     private JFrame frame;
     private static String selectedSize;
+    private static String player;
     private JComboBox<String> choiceComboBox;
     private JComboBox<String> sizeComboBox;
+    private static String selectedChoice;
 
     public HomePage() {
         frame = new JFrame("AI Home Page");
@@ -34,10 +36,16 @@ public class HomePage extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Redirect to BoardPage when the button is clicked
+                player = (String)choiceComboBox.getSelectedItem();
                 selectedSize = (String) sizeComboBox.getSelectedItem();
+                selectedChoice = (String) choiceComboBox.getSelectedItem(); // Store it in the static variable
+
+                boolean isAI = selectedChoice.equals("AI") ||
+                        selectedChoice.equals("AIlvl1") ||
+                        selectedChoice.equals("AIlvl2");
                 if (selectedSize != null) {
                     frame.dispose();
-                    new BoardPage(selectedSize).setVisible(true);
+                    new Board(selectedSize, player, isAI).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Please select a board size.");
                 }
@@ -77,7 +85,10 @@ public class HomePage extends JFrame{
                 String selectedSize = (String) sizeComboBox.getSelectedItem();
                 if (selectedSize != null) {
                     // Transférer la taille sélectionnée à BoardPage
-                    new BoardPage(selectedSize);
+                    boolean isAI = selectedChoice.equals("AI") ||
+                            selectedChoice.equals("AIlvl1") ||
+                            selectedChoice.equals("AIlvl2");;
+                    new Board(selectedSize , player , isAI);
                 }
 
             }
@@ -111,6 +122,14 @@ public class HomePage extends JFrame{
     public static String getSelectedSize() {
         return selectedSize;
     }
+    public static String getSelectedPlayer() {
+        return player;
+    }
+    public static String getSelectedChoice(){
+        return selectedChoice;
+    }
+
+    
 
 
     public static void main(String[] args) {

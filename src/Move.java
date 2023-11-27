@@ -1,2 +1,3 @@
 abstract public class Move {
 }
+
