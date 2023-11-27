@@ -13,10 +13,10 @@ public class BoardPage extends JFrame {
     private String currentPlayer;
     private int boardSize;
 
-    public BoardPage(String selectedSize , String player) {
+    public BoardPage(String player) {
         System.out.println(player);
 
-        boardSize = Integer.parseInt(selectedSize.substring(0, 1));
+
         buttons = new JButton[boardSize][boardSize];
         currentPlayer = player ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
@@ -215,7 +215,7 @@ public class BoardPage extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedSize() , Homepage.getSelectedPlayer());
+            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });
