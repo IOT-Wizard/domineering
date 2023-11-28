@@ -1,5 +1,5 @@
 
-   /* public class Domineering extends GameSearch {
+public class Domineering extends GameSearch {
 
         public boolean wonPosition(Position p, boolean player) {
             if (GameSearch.DEBUG) System.out.println("drawnPosition("+p+")");
@@ -165,4 +165,3 @@
         }
     }
 
-*/

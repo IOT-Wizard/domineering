@@ -6,15 +6,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 
+
+
 public class BoardPage extends JFrame {
     private JButton[][] buttons;
-    private char currentPlayer;
+    private String currentPlayer;
     private int boardSize;
 
-    public BoardPage(String selectedSize) {
-        boardSize = Integer.parseInt(selectedSize.substring(0, 1));
-        buttons = new JButton[boardSize + 1][boardSize + 1];
-        currentPlayer = 'H'; // 'H' for horizontal, 'V' for vertical
+    public BoardPage(String player) {
+        System.out.println(player);
+
+
+        buttons = new JButton[boardSize][boardSize];
+        currentPlayer = player ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
         loadGameLevel(); // Load the game level at the start
     }
@@ -29,8 +33,8 @@ public class BoardPage extends JFrame {
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(5, 5));
 
-        for (int i = 0; i <= boardSize; i++) {
-            for (int j = 0; j <= boardSize; j++) {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 buttons[i][j] = new JButton();
                 buttons[i][j].setFont(new Font("Arial", Font.PLAIN, 20));
                 buttons[i][j].addActionListener(new ButtonClickListener());
@@ -72,7 +76,6 @@ public class BoardPage extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
-
             int row = -1, col = -1;
 
             // Find the clicked button's position in the grid
@@ -87,7 +90,7 @@ public class BoardPage extends JFrame {
             }
 
             if (isValidMove(row, col)) {
-                if (currentPlayer == 'H') {
+                if (currentPlayer == "H") {
                     buttons[row][col].setText("HH");
                     buttons[row + 1][col].setText("HH");
                 } else {
@@ -96,30 +99,31 @@ public class BoardPage extends JFrame {
                 }
 
                 // Switch players
-                currentPlayer = (currentPlayer == 'H') ? 'V' : 'H';
+                currentPlayer = (currentPlayer == "H") ? "V" : "H";
             }
         }
     }
 
     private boolean isValidMove(int row, int col) {
         // Check if the move is within the bounds and the selected cells are empty
-        if (row >= 0 && row < 4 && col >= 0 && col < 4) {
-            if (currentPlayer == 'H' &&
+        if (row >= 0 && row < boardSize - 1 && col >= 0 && col < boardSize - 1) {
+            if (currentPlayer == "H" &&
                     buttons[row][col].getText().equals("") &&
                     buttons[row + 1][col].getText().equals("")) {
                 return true;
-            } else return currentPlayer == 'V' &&
+            } else return currentPlayer == "V" &&
                     buttons[row][col].getText().equals("") &&
                     buttons[row][col + 1].getText().equals("");
         }
         return false;
     }
 
+
     private void showHint() {
         // Find an empty spot where the player can place a domino
 
-        for (int i = 0; i < boardSize-1; i++) {
-            for (int j = 0; j < boardSize-1; j++) {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 if (buttons[i][j].getText().isEmpty() && buttons[i + 1][j].getText().isEmpty()) {
                     // Suggest a horizontal move
                     suggestHint(i, j, i + 1, j);
@@ -149,7 +153,7 @@ public class BoardPage extends JFrame {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("game_level.txt"))) {
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize; j++) {
-                    String cellState = buttons[i][j].getText().isEmpty() ? " " : buttons[i][j].getText(); // " " for empty
+                    String cellState = buttons[i][j].getText().isEmpty() ? "E" : buttons[i][j].getText(); // "E" for empty
                     writer.write(cellState);
                 }
                 writer.newLine();
@@ -168,8 +172,12 @@ public class BoardPage extends JFrame {
                         String cellState = String.valueOf(line.charAt(j));
                         buttons[i][j].setText(cellState);
 
-                        // Enable all buttons after loading
-                        buttons[i][j].setEnabled(true);
+                        // Enable or disable buttons based on cell state
+                        if (cellState.equals("E")) {
+                            buttons[i][j].setEnabled(true); // Enable empty cells
+                        } else {
+                            buttons[i][j].setEnabled(false); // Disable non-empty cells
+                        }
                     }
                 }
             }
@@ -206,8 +214,8 @@ public class BoardPage extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            HomePage Home = new HomePage();
-            BoardPage domineeringGame = new BoardPage(Home.getSelectedSize());
+
+            BoardPage domineeringGame = new BoardPage(HomePage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });

@@ -5,35 +5,36 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Vector;
-
 public class Board extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
     private int boardSize;
 
-    public Board(String selectedSize , String player, boolean isAI) {
+    public Board(String selectedSize , String player) {
         boardSize = Integer.parseInt(selectedSize.substring(0, 1));
         buttons = new JButton[boardSize][boardSize];
         currentPlayer = "H" ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
         //loadGameLevel(); // Load the game level at the start
-        if (isAI) {
-            performAIMove();
-        }
     }
 
 
     private void initializeUI() {
         setTitle("Domineering Game");
-        setSize(400, 500); // Increased height to accommodate buttons
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setSize(500, 600); // Increased height to accommodate buttons
+        //setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                startNewGame();
+            }
+        });
         // Create a panel to hold the game grid
         JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(5, 5));
+        gamePanel.setLayout(new GridLayout(boardSize, boardSize));
 
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
@@ -96,324 +97,97 @@ public class Board extends JFrame {
                 }
             }
 
-            if (isValidMove( row, col)) {
+            if (isValidMove(row, col)) {
 
-                if (currentPlayer.equals("H")) {
-                    buttons[row][col].setText("HH");
-                    buttons[row + 1][col].setText("HH");
+                if (currentPlayer == "H") {
+                    buttons[row][col].setBackground(new Color(0x8D0808));
+                    buttons[row + 1][col].setBackground(new Color(0x8D0808));
                 } else {
-                    buttons[row][col].setText("VV");
-                    buttons[row][col + 1].setText("VV");
+                    buttons[row][col].setBackground(new Color(0x070707));
+                    buttons[row][col + 1].setBackground(new Color(0x070707));
                 }
                 boolean win = wonPosition(currentPlayer);
 
-                if (win) {
-                    if (currentPlayer.equals("H"))  JOptionPane.showMessageDialog(getParent(), " player 1 win ");
-                    if (currentPlayer.equals("Human"))  JOptionPane.showMessageDialog(getParent(), " player 2 win ");
+                if (win == true) {
+                    if (currentPlayer == "H")  JOptionPane.showMessageDialog(getParent(), " player 1 win ");
+                    if (currentPlayer == "Human")  JOptionPane.showMessageDialog(getParent(), " player 2 win ");
 
+                    // SwingUtilities.getWindowAncestor(getParent()).dispose();
+                    //frame.dispose();
+                    dispose();
+                    new Homepage() ;
 
                 }
 
                 // Switch players
-                currentPlayer = (currentPlayer.equals("H")) ? "Human" : "H";
-            }
-        }
-    }
-    private void performAIMove() {
-        // Create a Position object representing the current state of the board
-        Position currentPosition = getCurrentBoardState();
-
-        // Call the alpha-beta algorithm to get the best move
-        Move bestMove = alphaBetaSearch(currentPosition, true);
-
-        // Update the UI or perform any necessary actions based on the AI move
-        updateBoardUI();
-
-        // Switch players
-        currentPlayer = "Human";
-    }
-
-    private Move alphaBetaSearch(Position currentPosition, boolean maximizingPlayer) {
-        float alpha = Float.NEGATIVE_INFINITY;
-        float beta = Float.POSITIVE_INFINITY;
-
-        // Call the alpha-beta helper function
-        Vector result = alphaBetaHelper(0, currentPosition, maximizingPlayer, alpha, beta);
-
-        // Retrieve the best move from the result
-        return (Move) result.elementAt(1);
-    }
-
-    private Vector alphaBetaHelper(int depth, Position p, boolean maximizingPlayer, float alpha, float beta) {
-        if (reachedMaxDepth(p, depth) || wonPosition(p, true) || wonPosition(p, false)) {
-            float value = positionEvaluation(p, maximizingPlayer);
-            Vector v = new Vector();
-            v.addElement(new Float(value));
-            v.addElement(null);
-            return v;
-        }
-
-        Vector best = new Vector();
-        Position[] moves = possibleMoves(p, maximizingPlayer);
-
-        for (int i = 0; i < moves.length; i++) {
-            Vector v2 = alphaBetaHelper(depth + 1, moves[i], !maximizingPlayer, -beta, -alpha);
-            float value = -((Float) v2.elementAt(0)).floatValue();
-
-            if (value >= beta) {
-                beta = value;
-                best = new Vector();
-                best.addElement(moves[i]);
-                Enumeration enum2 = v2.elements();
-                enum2.nextElement(); // skip previous value
-                while (enum2.hasMoreElements()) {
-                    Object o = enum2.nextElement();
-                    if (o != null) best.addElement(o);
-                }
-                break; // Prune the branch
-            }
-
-            if (value > alpha) {
-                alpha = value;
-                best = new Vector();
-                best.addElement(moves[i]);
-                Enumeration enum2 = v2.elements();
-                enum2.nextElement(); // skip previous value
-                while (enum2.hasMoreElements()) {
-                    Object o = enum2.nextElement();
-                    if (o != null) best.addElement(o);
-                }
-            }
-        }
-
-        Vector v3 = new Vector();
-        v3.addElement(new Float((maximizingPlayer) ? alpha : beta));
-        Enumeration enum2 = best.elements();
-        while (enum2.hasMoreElements()) {
-            v3.addElement(enum2.nextElement());
-        }
-        return v3;
-    }
-
-    private float positionEvaluation(Position p, boolean maximizingPlayer) {
-        // Get the board state from the Position object
-        String[][] boardState = ((ConcretePosition) p).getBoardState();
-
-        // Example Evaluation Logic:
-        // Calculate the score based on the number of dominos placed by each player.
-        int player1Score = countDominos(boardState, "H");
-        int player2Score = countDominos(boardState, "V");
-
-        // Return the evaluation score (positive for maximizing player, negative for minimizing player)
-        return maximizingPlayer ? player1Score - player2Score : player2Score - player1Score;
-    }
-
-    // Helper method to count the number of dominos for a specific player symbol
-    private int countDominos(String[][] boardState, String playerSymbol) {
-        int count = 0;
-        for (int i = 0; i < boardState.length; i++) {
-            for (int j = 0; j < boardState[i].length; j++) {
-                if (boardState[i][j].equals(playerSymbol)) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-
-    private boolean reachedMaxDepth(Position p, int depth) {
-       int MAX_DEPTH = 0;
-        return depth >= MAX_DEPTH;
-    }
-
-    private boolean wonPosition(Position p, boolean maximizingPlayer) {
-        // Get the board state from the Position object
-        String[][] boardState = ((ConcretePosition) p).getBoardState();
-
-        // Implement the winning condition based on the game rules
-        // For example, check if there is a horizontal or vertical line of dominoes for the maximizingPlayer
-        if (maximizingPlayer) {
-            // Check for a horizontal line
-            for (int i = 0; i < boardSize - 1; i++) {
-                for (int j = 0; j < boardSize; j++) {
-                    if (boardState[i][j].isEmpty() && boardState[i + 1][j].isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        } else {
-            // Check for a vertical line
-            for (int i = 0; i < boardSize; i++) {
-                for (int j = 0; j < boardSize - 1; j++) {
-                    if (boardState[i][j].isEmpty() && boardState[i][j + 1].isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        // If no winning condition is met, return false
-        return true;
-    }
-
-    private Position[] possibleMoves(Position p, boolean maximizingPlayer) {
-        // Get the board state from the Position object
-        String[][] boardState = ((ConcretePosition) p).getBoardState();
-
-        // Create an array to store the possible moves
-        Position[] moves = new Position[2 * boardSize * boardSize]; // Maximum possible moves
-
-        // Initialize the index for storing moves
-        int moveIndex = 0;
-
-        // Iterate through the board to find empty spots where a domino can be placed
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                // Check for a horizontal move
-                if (j < boardSize - 1 && boardState[i][j].isEmpty() && boardState[i][j + 1].isEmpty()) {
-                    // Create a new position with the move applied
-                    String[][] newBoardState = copyBoardState(boardState);
-                    newBoardState[i][j] = "H";
-                    newBoardState[i][j + 1] = "H";
-                    moves[moveIndex++] = new ConcretePosition(newBoardState);
-                }
-
-                // Check for a vertical move
-                if (i < boardSize - 1 && boardState[i][j].isEmpty() && boardState[i + 1][j].isEmpty()) {
-                    // Create a new position with the move applied
-                    String[][] newBoardState = copyBoardState(boardState);
-                    newBoardState[i][j] = "V";
-                    newBoardState[i + 1][j] = "V";
-                    moves[moveIndex++] = new ConcretePosition(newBoardState);
-                }
-            }
-        }
-
-        // Trim the array to the actual number of moves
-        return Arrays.copyOf(moves, moveIndex);
-    }
-
-    // Helper method to copy the board state
-    private String[][] copyBoardState(String[][] boardState) {
-        int size = boardState.length;
-        String[][] copy = new String[size][size];
-        for (int i = 0; i < size; i++) {
-            System.arraycopy(boardState[i], 0, copy[i], 0, size);
-        }
-        return copy;
-    }
-
-
-    private Position getCurrentBoardState() {
-        String[][] boardState = new String[boardSize][boardSize];
-
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                boardState[i][j] = buttons[i][j].getText();
-            }
-        }
-
-        return new ConcretePosition(boardState);
-    }
-
-    private void makeMove(Position p, boolean player, Move move) {
-        // Ensure that the Position and Move are concrete instances
-        if (!(p instanceof ConcretePosition) || !(move instanceof ConcreteMove)) {
-            // Handle error or throw an exception
-            return;
-        }
-
-        // Cast to concrete classes
-        ConcretePosition concretePosition = (ConcretePosition) p;
-        ConcreteMove concreteMove = (ConcreteMove) move;
-
-        // Update the board state based on the move
-        String[][] boardState = concretePosition.getBoardState();
-        int row = concreteMove.getRow();
-        int col = concreteMove.getCol();
-        String playerSymbol = (player) ? "H" : "Human";
-
-        // Check if the move is valid before updating the board state
-        if (isValidMove(row, col)) {
-            boardState[row][col] = playerSymbol;
-        } else {
-            // Handle invalid move (e.g., show a message or throw an exception)
-            return;
-        }
-
-        // Update the UI or perform any necessary actions based on the move
-        updateBoardUI();
-    }
-
-    private void updateBoardUI() {
-        Position currentPosition = getCurrentBoardState();
-        String[][] boardState = ((ConcretePosition) currentPosition).getBoardState();
-
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                buttons[i][j].setText(boardState[i][j]);
+                currentPlayer = (currentPlayer == "H") ? "Human" : "H";
             }
         }
     }
 
-
-    private boolean isValidMove( int row, int col) {
-        // Check if the move is within the bounds and the selected cells are empty
+    private boolean isValidMove(int row, int col) {
+        // Check if the move is within the bounds
         if (row >= 0 && row <= boardSize - 1 && col >= 0 && col <= boardSize - 1) {
-            if (currentPlayer == "H" && buttons[row][col].getText().equals("") && buttons[row + 1][col].getText().equals("")) {
+            Color backgroundColor = buttons[row][col].getBackground();
+            Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
+
+            if (currentPlayer.equals("H") && (backgroundColor.equals(blankColor) || backgroundColor.equals(Color.YELLOW) ) &&
+                    (buttons[row + 1][col].getBackground().equals(blankColor) || buttons[row + 1][col].getBackground().equals(Color.yellow)) ) {
                 return true;
-            } else
-            if (currentPlayer == "Human" && buttons[row][col].getText().equals("") && buttons[row][col + 1].getText().equals("")){
-                return  true ;
+            } else if (currentPlayer.equals("Human") &&( backgroundColor.equals(blankColor) || backgroundColor.equals(Color.YELLOW)) &&
+                    ( buttons[row][col + 1].getBackground().equals(blankColor)|| buttons[row][col + 1].getBackground().equals(Color.yellow)) ) {
+                return true;
             }
-
-
         }
         return false;
     }
 
 
-    public boolean wonPosition(
-            String player){
-        if(player == "Human"){
-            for (int i = 0; i < boardSize-1; i++) { // taille = 5
-                for (int j = 0; j < boardSize ; j++) {
-                    if (i == boardSize-1) {//taille -1
-                        continue;
-                    } else if (buttons[i][j].getText().equals("") && buttons[i+1][j].getText().equals("")) {
-                        return false;
-                    }
-                }
-            }
-        }
-        else {
-            for (int i = 0; i < boardSize; i++) { // taille = 5
-                for (int j = 0; j < boardSize-1 ; j++) {
-                    if (buttons[i][j].getText().equals("") && buttons[i][j + 1].getText().equals("")) {
-                        return false;
-                    }
-                }
-            }
 
+    public boolean wonPosition(String player) {
+        Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
+
+        if(player.equals("Human")) {
+            for (int i = 0; i < boardSize- 1; i++) {
+                for (int j = 0; j < boardSize; j++) {
+                    if (i == 4) {
+                        continue;
+                    } else if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) && (buttons[i+1][j].getBackground().equals(blankColor) || buttons[i+1][j].getBackground().equals(blankColor))) {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize- 1 ; j++) {
+                    if ((buttons[i][j].getBackground().equals(blankColor)  || buttons[i][j].getBackground().equals(Color.YELLOW) )&& (buttons[i][j + 1].getBackground().equals(blankColor)||buttons[i][j + 1].getBackground().equals(Color.YELLOW) )) {
+                        return false;
+                    }
+                }
+            }
         }
-        return  true ;
+        return true;
     }
 
     private void showHint() {
-        // Find an empty spot where the player can place a domino
+        Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
 
         for (int i = 0; i < boardSize-1; i++) {
-            for (int j = 0; j < boardSize - 1; j++) {
-                if (buttons[i][j].getText().isEmpty() && buttons[i + 1][j].getText().isEmpty()) {
-                    // Suggest a horizontal move
-                    suggestHint(i, j, i + 1, j);
-                    return;
-                } else if (buttons[i][j].getText().isEmpty() && buttons[i][j + 1].getText().isEmpty()) {
-                    // Suggest a vertical move
-                    suggestHint(i, j, i, j + 1);
-                    return;
+            for (int j = 0; j < boardSize-1; j++) {
+                if (currentPlayer == "H") {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                        // Suggest a horizontal move
+                        suggestHint(i, j, i + 1, j);
+                        return;
+                    }
+                }else {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
+                        // Suggest a vertical move
+                        suggestHint(i, j, i, j + 1);
+                        return;
+                    }
                 }
+
             }
         }
 
@@ -495,17 +269,7 @@ public class Board extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Retrieve the selected player from the homepage
-            String selectedSize = HomePage.getSelectedSize();
-            String selectedPlayer = HomePage.getSelectedPlayer();
-            String selectedChoice = HomePage.getSelectedChoice();
-
-            boolean isAI = selectedChoice.equals("AI") ||
-                    selectedChoice.equals("AIlvl1") ||
-                    selectedChoice.equals("AIlvl2");
-
-            Board domineeringGame = new Board(selectedSize, selectedPlayer, isAI);
-            domineeringGame.setLocationRelativeTo(null);
+            Board domineeringGame = new Board(HomePage.getSelectedSize() , HomePage.getSelectedPlayer());
             domineeringGame.setVisible(true);
         });
     }
