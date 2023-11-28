@@ -8,9 +8,10 @@ public class Domineering extends GameSearch {
         DomineeringPosition pos = (DomineeringPosition)p;
 
         if(player == PROGRAM){ // 19 20 21 22 23
-            for (int i = 0; i < 20; i++) {
-                if (i == 19 || i == 20 || i == 21|| i == 22|| i == 23)
+            for (int i = 0; i < 20; i++) {   // (int i = 0; i < pos.size * pos.size; i++) 💱
+                if (i == 20 || i == 21 || i == 22|| i == 23|| i == 24) // Non traite a suprrimer LOL car i esr tjrs <20 🙂🙂🙂
                     continue;
+
                 else {
                     if (pos.board[i] == DomineeringPosition.BLANK && pos.board[i+5] == DomineeringPosition.BLANK) {
                         ret = false;
@@ -21,8 +22,8 @@ public class Domineering extends GameSearch {
         }
 
         if(player == HUMAN){
-            for (int i = 0; i < 24; i++) { // 4 9 13 18 23
-                if (i == 4 || i == 9 || i == 13 || i == 18|| i == 23)
+            for (int i = 0; i < 24; i++) { // 4 9 14 18 23 // (int i = 0; i < pos.size * (pos.size - 1); i++) 💱
+                if (i == 4 || i == 9 || i == 14 || i == 19|| i == 24) //  (i % pos.size == pos.size - 1) 💱 i % pos.size == pos.size - 1 = 4 dans ce cas 📑Math 🤖
                     continue;
                 else {
                     if (pos.board[i] == DomineeringPosition.BLANK && pos.board[i+1] == DomineeringPosition.BLANK) {
