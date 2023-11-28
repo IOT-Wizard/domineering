@@ -21,12 +21,20 @@ public class BoardH extends JFrame {
 
     private void initializeUI() {
         setTitle("Domineering Game");
-        setSize(400, 500); // Increased height to accommodate buttons
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setSize(500, 600); // Increased height to accommodate buttons
+        //setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                startNewGame();
+            }
+        });
         // Create a panel to hold the game grid
         JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(5, 5));
+        gamePanel.setLayout(new GridLayout(boardSize, boardSize));
 
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
@@ -92,11 +100,11 @@ public class BoardH extends JFrame {
             if (isValidMove(row, col)) {
 
                 if (currentPlayer == "H") {
-                    buttons[row][col].setText("HH");
-                    buttons[row + 1][col].setText("HH");
+                    buttons[row][col].setBackground(new Color(0x8D0808));
+                    buttons[row + 1][col].setBackground(new Color(0x8D0808));
                 } else {
-                    buttons[row][col].setText("VV");
-                    buttons[row][col + 1].setText("VV");
+                    buttons[row][col].setBackground(new Color(0x070707));
+                    buttons[row][col + 1].setBackground(new Color(0x070707));
                 }
                 boolean win = wonPosition(currentPlayer);
 
@@ -104,6 +112,10 @@ public class BoardH extends JFrame {
                     if (currentPlayer == "H")  JOptionPane.showMessageDialog(getParent(), " player 1 win ");
                     if (currentPlayer == "Human")  JOptionPane.showMessageDialog(getParent(), " player 2 win ");
 
+                    // SwingUtilities.getWindowAncestor(getParent()).dispose();
+                    //frame.dispose();
+                    dispose();
+                    new Homepage() ;
 
                 }
 
@@ -114,61 +126,68 @@ public class BoardH extends JFrame {
     }
 
     private boolean isValidMove(int row, int col) {
-        // Check if the move is within the bounds and the selected cells are empty
+        // Check if the move is within the bounds
         if (row >= 0 && row <= boardSize - 1 && col >= 0 && col <= boardSize - 1) {
-            if (currentPlayer == "H" && buttons[row][col].getText().equals("") && buttons[row + 1][col].getText().equals("")) {
+            Color backgroundColor = buttons[row][col].getBackground();
+            Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
+
+            if (currentPlayer.equals("H") && (backgroundColor.equals(blankColor) || backgroundColor.equals(Color.YELLOW) ) &&
+                    (buttons[row + 1][col].getBackground().equals(blankColor) || buttons[row + 1][col].getBackground().equals(Color.yellow)) ) {
                 return true;
-            } else
-                if (currentPlayer == "Human" && buttons[row][col].getText().equals("") && buttons[row][col + 1].getText().equals("")){
-                return  true ;
+            } else if (currentPlayer.equals("Human") &&( backgroundColor.equals(blankColor) || backgroundColor.equals(Color.YELLOW)) &&
+                    ( buttons[row][col + 1].getBackground().equals(blankColor)|| buttons[row][col + 1].getBackground().equals(Color.yellow)) ) {
+                return true;
             }
-
-
         }
         return false;
     }
 
 
-    public boolean wonPosition(
-            String player){
-        if(player == "Human"){
-            for (int i = 0; i < 4; i++) { // taille = 5
-                for (int j = 0; j < 5 ; j++) {
-                    if (i == 4) {//taille -1
-                        continue;
-                    } else if (buttons[i][j].getText().equals("") && buttons[i+1][j].getText().equals("")) {
-                        return false;
-                    }
-                }
-            }
-        }
-        else {
-            for (int i = 0; i < 5; i++) { // taille = 5
-                for (int j = 0; j < 4 ; j++) {
-                     if (buttons[i][j].getText().equals("") && buttons[i][j + 1].getText().equals("")) {
-                        return false;
-                    }
-                }
-            }
 
+    public boolean wonPosition(String player) {
+        Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
+
+        if(player.equals("Human")) {
+            for (int i = 0; i < boardSize- 1; i++) {
+                for (int j = 0; j < boardSize; j++) {
+                    if (i == 4) {
+                        continue;
+                    } else if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) && (buttons[i+1][j].getBackground().equals(blankColor) || buttons[i+1][j].getBackground().equals(blankColor))) {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize- 1 ; j++) {
+                    if ((buttons[i][j].getBackground().equals(blankColor)  || buttons[i][j].getBackground().equals(Color.YELLOW) )&& (buttons[i][j + 1].getBackground().equals(blankColor)||buttons[i][j + 1].getBackground().equals(Color.YELLOW) )) {
+                        return false;
+                    }
+                }
+            }
         }
-        return  true ;
+        return true;
     }
 
     private void showHint() {
-        // Find an empty spot where the player can place a domino
+        Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
 
         for (int i = 0; i < boardSize-1; i++) {
             for (int j = 0; j < boardSize-1; j++) {
-                if (buttons[i][j].getText().isEmpty() && buttons[i + 1][j].getText().isEmpty()) {
-                    // Suggest a horizontal move
-                    suggestHint(i, j, i + 1, j);
-                    return;
-                } else if (buttons[i][j].getText().isEmpty() && buttons[i][j + 1].getText().isEmpty()) {
-                    // Suggest a vertical move
-                    suggestHint(i, j, i, j + 1);
-                    return;
+                if (currentPlayer == "H") {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                        // Suggest a horizontal move
+                        suggestHint(i, j, i + 1, j);
+                        return;
+                    }
+                }else {
+                     if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
+                            // Suggest a vertical move
+                            suggestHint(i, j, i, j + 1);
+                            return;
+                        }
                 }
+
             }
         }
 
@@ -251,8 +270,7 @@ public class BoardH extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             BoardH domineeringGame = new BoardH(Homepage.getSelectedSize() , Homepage.getSelectedPlayer());
-            domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
-        });
-    }
+   });
+}
 }

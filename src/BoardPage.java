@@ -6,15 +6,17 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 
+
+
 public class BoardPage extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
     private int boardSize;
 
-    public BoardPage(String selectedSize , String player) {
+    public BoardPage(String player) {
         System.out.println(player);
 
-        boardSize = Integer.parseInt(selectedSize.substring(0, 1));
+
         buttons = new JButton[boardSize][boardSize];
         currentPlayer = player ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
@@ -120,8 +122,8 @@ public class BoardPage extends JFrame {
     private void showHint() {
         // Find an empty spot where the player can place a domino
 
-        for (int i = 0; i < boardSize-1; i++) {
-            for (int j = 0; j < boardSize-1; j++) {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 if (buttons[i][j].getText().isEmpty() && buttons[i + 1][j].getText().isEmpty()) {
                     // Suggest a horizontal move
                     suggestHint(i, j, i + 1, j);
@@ -213,7 +215,7 @@ public class BoardPage extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedSize() , Homepage.getSelectedPlayer());
+            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });

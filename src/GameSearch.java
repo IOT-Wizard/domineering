@@ -104,7 +104,7 @@ public abstract class GameSearch {
 
             printPosition(startingPosition);
             if (wonPosition(startingPosition, PROGRAM)) {
-                System.out.println("Human2 won");
+                System.out.println("PROGRAM won");
                 break;
             }
             if (wonPosition(startingPosition, HUMAN)) {
@@ -123,19 +123,29 @@ public abstract class GameSearch {
                 break;
             }
 
-            System.out.print("\nH2  Your move:");
+           /* System.out.print("\nH2  Your move:");
             move = createMove();
             startingPosition = makeMove(startingPosition, PROGRAM, move);
 
             printPosition(startingPosition);
 
+            */
+            Vector v = alphaBeta(0, startingPosition, PROGRAM);
+
+            Enumeration enum2 = v.elements();
+            while (enum2.hasMoreElements()) {
+                System.out.println(" next element: " + enum2.nextElement());
+            }
+            startingPosition = (Position)v.elementAt(1);
+            //startingPosition = makeMove(startingPosition, PROGRAM, (Move)v.elementAt(0));
+
             if (wonPosition(startingPosition, PROGRAM)) {
-                System.out.println("Human2 won");
+                System.out.println("PROGRAM won");
                 break;
             }
              /*
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
-            
+
             Enumeration enum2 = v.elements();
             while (enum2.hasMoreElements()) {
                 System.out.println(" next element: " + enum2.nextElement());
