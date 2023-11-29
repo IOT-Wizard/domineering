@@ -2,8 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class HomePage {
+    private static boolean load = false ;
+
     private JFrame frame;
     private static String selectedSize;
     private static String player;
@@ -40,7 +45,12 @@ public class HomePage {
                 selectedSize = (String) sizeComboBox.getSelectedItem();
                 if (selectedSize != null) {
                     frame.dispose();
-                    new Board(selectedSize, player).setVisible(true);
+                    if (player=="HUMAN") {
+                        new BoardH(selectedSize, player , load).setVisible(true);
+
+                    }else{
+                        new BoardIA( selectedSize, load).setVisible(true);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Please select a board size.");
                 }
@@ -76,7 +86,8 @@ public class HomePage {
                 String selectedSize = (String) sizeComboBox.getSelectedItem();
                 if (selectedSize != null) {
                     // Transférer la taille sélectionnée à BoardPage
-                    new Board(selectedSize , player );
+                    new BoardH(selectedSize , player, load );
+                    //new BoardIA(selectedSize,load);
                 }
 
             }
@@ -113,6 +124,63 @@ public class HomePage {
     }
     public static String getSelectedPlayer() {
         return player;
+    }
+
+    public static boolean getload(){
+        return load;
+    }
+    private boolean loadGame(String fileName , int boardSize , String p) {
+        BoardH board = new BoardH(String.valueOf(boardSize), p , false);
+        return board.loadGameLevel(fileName);
+    }
+
+    private void startSavedGame() {
+        int option = JOptionPane.showConfirmDialog(
+                frame,
+                "Do you want to continue the saved game?",
+                "Continue Saved Game",
+                JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION) {
+            load = true;
+
+            try (BufferedReader reader = new BufferedReader(new FileReader("game_level.txt"))) {
+                // Read board size from the first line
+                String sizeLine = reader.readLine();
+                if (sizeLine != null) {
+                    int boardSize = Integer.parseInt(sizeLine.trim());
+
+                    // Read player information from the second line
+                    String playerLine = reader.readLine();
+                    if (playerLine != null) {
+                        String player = playerLine.trim();
+
+                        // Print for debugging
+                        System.out.println("Player: " + player + ", Board Size: " + boardSize);
+                        frame.dispose();
+                        // Create the BoardH instance
+                        BoardH board =new BoardH(String.valueOf(boardSize), player, load);
+                        board.setVisible(true);
+
+                        // Uncomment the following block if the 'loadGame' method is defined
+                    /*
+                    if (loadGame("game_level.txt", boardSize, player)) {
+                        JOptionPane.showMessageDialog(frame, "Game loaded successfully!");
+                    }
+                    */
+                    } else {
+                        // Player information not found
+                        JOptionPane.showMessageDialog(frame, "Player information not found. Starting a new game.");
+                    }
+                } else {
+                    // Board size not found
+                    JOptionPane.showMessageDialog(frame, "Board size not found. Starting a new game.");
+                }
+            } catch (IOException | NumberFormatException e) {
+                // Handle specific exceptions appropriately
+                e.printStackTrace();
+            }
+        }
     }
 
 

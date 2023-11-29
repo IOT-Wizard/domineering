@@ -1,4 +1,5 @@
-EEEE
-HHEEE
-HHVVVVE
-EEEE
+3
+true
+000
+000
+000
