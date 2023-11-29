@@ -10,13 +10,18 @@ public class BoardH extends JFrame {
     private String currentPlayer;
     private int boardSize;
 
-    public BoardH(String selectedSize , String player) {
+    int HintH=3;
+    int HintV=3;
+
+    public BoardH(String selectedSize , String player ,Boolean load) {
         boardSize = Integer.parseInt(selectedSize.substring(0, 1));
         buttons = new JButton[boardSize][boardSize];
         currentPlayer = "H" ; // 'H' for horizontal, 'V' for vertical
         initializeUI();
+
         System.out.println(player);
-        //loadGameLevel(); // Load the game level at the start
+        System.out.println(load);
+        if(load)  loadGameLevel("game_level.txt"); // Load the game level at the start
     }
 
 
@@ -27,12 +32,7 @@ public class BoardH extends JFrame {
 
 
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-               // startNewGame();
-            }
-        });
+
         // Create a panel to hold the game grid
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(boardSize, boardSize));
@@ -72,8 +72,15 @@ public class BoardH extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                saveGameLevel();
-                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                int option = JOptionPane.showConfirmDialog(BoardH.this,
+                        "Voulez-vous sauvegarder la partie en cours avant de quitter?",
+                        "Confirmation",
+                        JOptionPane.YES_NO_CANCEL_OPTION);
+
+                if (option == JOptionPane.YES_OPTION) {
+                    saveGameLevel();
+                    System.exit(0);
+                }
             }
         });
     }
@@ -112,6 +119,8 @@ public class BoardH extends JFrame {
                 if (win == true) {
                     if (currentPlayer == "H")  JOptionPane.showMessageDialog(getParent(), " player 1 win ");
                     if (currentPlayer == "Human")  JOptionPane.showMessageDialog(getParent(), " player 2 win ");
+                    dispose();
+                    new Homepage() ;
 
 
                 }
@@ -171,15 +180,22 @@ public class BoardH extends JFrame {
 
         for (int i = 0; i < boardSize-1; i++) {
             for (int j = 0; j < boardSize-1; j++) {
-                if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
-                    // Suggest a horizontal move
-                    suggestHint(i, j, i + 1, j);
-                    return;
-                } else if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
-                    // Suggest a vertical move
-                    suggestHint(i, j, i, j + 1);
-                    return;
+                if (currentPlayer == "H" && HintH >0 ) {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                        // Suggest a horizontal move
+                        suggestHint(i, j, i + 1, j);
+                        HintH--;
+                        return;
+                    }
+                } if (currentPlayer == "Human" && HintV >0 ) {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
+                        // Suggest a vertical move
+                        suggestHint(i, j, i, j + 1);
+                        HintV --;
+                        return;
+                    }
                 }
+
             }
         }
 
@@ -197,7 +213,14 @@ public class BoardH extends JFrame {
 
 
     private void saveGameLevel() {
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("game_level.txt"))) {
+            writer.write(String.valueOf(boardSize));
+            writer.newLine();
+
+            // Save the player on the second line
+            writer.write(currentPlayer);
+            writer.newLine();
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize; j++) {
                     String cellState;
@@ -219,27 +242,41 @@ public class BoardH extends JFrame {
         }
     }
 
-    private boolean loadGameLevel() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("game_level.txt"))) {
+    public boolean loadGameLevel(String fileName) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line ;
+
+            int currentLineNumber = 0;
+            while ((line = reader.readLine()) != null && currentLineNumber < 1) {
+                currentLineNumber++;
+
+                // Si la ligne actuelle est la ligne cible, imprimez-la
+                if (currentLineNumber == 2) {
+                    System.out.println("Ligne " + 2 + ": " + line);
+                }
+            }
+
             for (int i = 0; i < boardSize; i++) {
-                String line = reader.readLine();
+                line = reader.readLine();
+                System.out.println("Ligne " + 2 + ": " + line);
+
                 if (line != null) {
-                    for (int j = 0; j < Math.min(line.length(), boardSize); j++) {
+                    for (int j = 0; j < Math.min(line.length(), boardSize ); j++) {
                         String cellState = String.valueOf(line.charAt(j));
 
                         // Update the button based on the saved cellState
                         if (cellState.equals("H")) {
                             buttons[i][j].setBackground(new Color(0x8D0808));
-                            buttons[i + 1][j].setBackground(new Color(0x8D0808));
+                           // buttons[i + 1][j].setBackground(new Color(0x8D0808));
                         } else if (cellState.equals("V")) {
                             buttons[i][j].setBackground(new Color(0x070707));
-                            buttons[i][j + 1].setBackground(new Color(0x070707));
+                            //buttons[i][j + 1].setBackground(new Color(0x070707));
                         } else {
                             // "0" represents empty cells
                             buttons[i][j].setBackground(Color.WHITE);
-                            buttons[i + 1][j].setBackground(Color.WHITE);
-                            buttons[i][j + 1].setBackground(Color.WHITE);
-                            buttons[i + 1][j + 1].setBackground(Color.WHITE);
+                           // buttons[i][j + 1].setBackground(Color.WHITE);
+                           // buttons[i + 1][j].setBackground(Color.WHITE);
+                            //buttons[i + 1][j + 1].setBackground(Color.WHITE);
                         }
 
                         // Enable or disable buttons based on cell state
@@ -261,32 +298,25 @@ public class BoardH extends JFrame {
 
 
 
+
     private void startNewGame() {
         int option = JOptionPane.showConfirmDialog(this,
-                "save the game ?",
+                "start a new   game ?",
                 "Start New Game",
                 JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION) {
-            // Check if there is a saved game and load it
-            if (loadGameLevel()) {
-                // If loading is successful, no need to clear the grid
-                return;
-            }
-
-            // Clear the game grid if there is no saved game or loading failed
-            for (int i = 0; i < boardSize; i++) {
-                for (int j = 0; j < boardSize; j++) {
-                    buttons[i][j].setText("");
-                }
-            }
+            dispose();
+            new Homepage() ;
         }
+
+
     }
 
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardH domineeringGame = new BoardH(Homepage.getSelectedSize() , Homepage.getSelectedPlayer());
+            BoardH domineeringGame = new BoardH(Homepage.getSelectedSize() , Homepage.getSelectedPlayer() , Homepage.getload()) ;
             domineeringGame.setVisible(true);
    });
 }
