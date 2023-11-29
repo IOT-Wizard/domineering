@@ -157,6 +157,16 @@ public abstract class GameSearch {
                System.out.println("Drawn game");
                break;
            }
+tion enum2 = v.elements();
+            while (enum2.hasMoreElements()) {
+                System.out.println(" next element: " + enum2.nextElement());
+            }
+
+            startingPosition = (Position)v.elementAt(1);
+           if(startingPosition ==null){
+               System.out.println("Drawn game");
+               break;
+           }
 
               */
         }

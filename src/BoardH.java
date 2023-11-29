@@ -200,7 +200,7 @@ public class BoardH extends JFrame {
         buttons[row2][col2].setBackground(Color.YELLOW);
 
         // Display a hint message
-        JOptionPane.showMessageDialog(this, "You can place a domino here!");
+      //  JOptionPane.showMessageDialog(this, "You can place a domino here!");
     }
 
 

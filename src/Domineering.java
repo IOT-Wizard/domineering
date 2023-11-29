@@ -8,7 +8,7 @@ public class Domineering extends GameSearch {
         DomineeringPosition pos = (DomineeringPosition)p;
 
         if(player == PROGRAM){ // 19 20 21 22 23
-            for (int i = 0; i < 20; i++) {   // (int i = 0; i < pos.size * pos.size; i++) 💱
+            for (int i = 0; i < 20; i++) {   // (int i = 0; i < pos.size * pos.size - size; i++) 💱
                 if (i == 20 || i == 21 || i == 22|| i == 23|| i == 24) // Non traite a suprrimer LOL car i esr tjrs <20 🙂🙂🙂
                     continue;
 
