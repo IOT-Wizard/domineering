@@ -8,7 +8,7 @@ import java.io.*;
 public class BoardH extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
-    private int boardSize;
+    private int  boardSize;
     int HintH =3;
     int HintV =3;
 
@@ -185,11 +185,13 @@ public class BoardH extends JFrame {
         for (int i = 0; i < boardSize-1; i++) {
             for (int j = 0; j < boardSize-1; j++) {
                 if (currentPlayer == "H" && HintH >0 ) {
-                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
-                        // Suggest a horizontal move
-                        suggestHint(i, j, i + 1, j);
-                        HintH--;
-                        return;
+                    if( HintH >0) {
+                        if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                            // Suggest a horizontal move
+                            suggestHint(i, j, i + 1, j);
+                            HintH--;
+                            return;
+                        }
                     }
                 } if (currentPlayer == "Human" && HintV >0 ) {
                      if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {

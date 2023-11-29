@@ -8,12 +8,12 @@ import java.io.*;
 
 
 
-public class BoardPage extends JFrame {
+public class BoardPage2 extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
     private int boardSize;
 
-    public BoardPage(String player) {
+    public BoardPage2(String player) {
         System.out.println(player);
 
 
@@ -215,10 +215,9 @@ public class BoardPage extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedPlayer());
+            BoardPage2 domineeringGame = new BoardPage2(Homepage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });
     }
 }
-
