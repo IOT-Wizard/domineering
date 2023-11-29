@@ -9,6 +9,8 @@ public class BoardH extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
     private int boardSize;
+    int HintH =3;
+    int HintV =3;
 
     public BoardH(String selectedSize , String player) {
         boardSize = Integer.parseInt(selectedSize.substring(0, 1));
@@ -114,7 +116,7 @@ public class BoardH extends JFrame {
 
                     // SwingUtilities.getWindowAncestor(getParent()).dispose();
                     //frame.dispose();
-                    dispose();
+                   dispose();
                     new Homepage() ;
 
                 }
@@ -174,16 +176,18 @@ public class BoardH extends JFrame {
 
         for (int i = 0; i < boardSize-1; i++) {
             for (int j = 0; j < boardSize-1; j++) {
-                if (currentPlayer == "H") {
+                if (currentPlayer == "H" && HintH >0 ) {
                     if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
                         // Suggest a horizontal move
                         suggestHint(i, j, i + 1, j);
+                        HintH--;
                         return;
                     }
-                }else {
+                } if (currentPlayer == "Human" && HintV >0 ) {
                      if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
                             // Suggest a vertical move
                             suggestHint(i, j, i, j + 1);
+                            HintV --;
                             return;
                         }
                 }
@@ -218,31 +222,8 @@ public class BoardH extends JFrame {
         }
     }
 
-    private boolean loadGameLevel() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("game_level.txt"))) {
-            for (int i = 0; i < boardSize; i++) {
-                String line = reader.readLine();
-                if (line != null) {
-                    for (int j = 0; j < Math.min(line.length(), boardSize); j++) {
-                        String cellState = String.valueOf(line.charAt(j));
-                        buttons[i][j].setText(cellState);
-
-                        // Enable or disable buttons based on cell state
-                        if (cellState.equals("E")) {
-                            buttons[i][j].setEnabled(true); // Enable empty cells
-                        } else {
-                            buttons[i][j].setEnabled(false); // Disable non-empty cells
-                        }
-                    }
-                }
-            }
-            return true; // Loading successful
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false; // Loading failed
-        }
+    public boolean loadGameLevel(String fileName) {
     }
-
 
     private void startNewGame() {
         int option = JOptionPane.showConfirmDialog(this,
