@@ -134,7 +134,7 @@ public class Domineering extends GameSearch {
 
         for (int i = 0; i < pos.size * pos.size - pos.size; i++) {
             if (i + pos.size  < pos.size * pos.size  && pos.board[i] == 0 && pos.board[i + pos.size] == 0) {
-                DomineeringPosition pos2 = new DomineeringPosition(pos.size);
+                DomineeringPosition pos2 = new DomineeringPosition(pos.size , pos.Complex);
                 pos2.board = Arrays.copyOf(pos.board, pos.size * pos.size );
 
                 if (player) {
@@ -159,7 +159,7 @@ public class Domineering extends GameSearch {
         if (GameSearch.DEBUG) System.out.println("Entered TicTacToe.makeMove");
         DomineeringMove m = (DomineeringMove)move;
         DomineeringPosition pos = (DomineeringPosition)p;
-        DomineeringPosition pos2 = new  DomineeringPosition(pos.size);
+        DomineeringPosition pos2 = new  DomineeringPosition(pos.size , pos.Complex);
         for (int i=0; i<pos.size * pos.size ; i++) pos2.board[i] = pos.board[i];
         int pp;
         if (player) pp =  1;
@@ -182,7 +182,9 @@ public class Domineering extends GameSearch {
     }
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
-        if(depth>=5) return true;
+        DomineeringPosition pos = (DomineeringPosition)p;
+
+        if(depth>=pos.Complex) return true;
         if (wonPosition(p, false)) ret = true;
         else if (wonPosition(p, true))  ret = true;
         if (GameSearch.DEBUG) {
@@ -206,7 +208,7 @@ public class Domineering extends GameSearch {
         return mm;
     }
     static public void main(String [] args) {
-        DomineeringPosition p = new DomineeringPosition(Integer.parseInt(HomePage.getSelectedSize()));
+        DomineeringPosition p = new DomineeringPosition(Integer.parseInt(HomePage.getSelectedSize()) , HomePage.getSelectedcomplex());
         Domineering ttt = new Domineering();
         ttt.playGame(p, true);
     }

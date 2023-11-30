@@ -12,7 +12,7 @@ public class DomineeringGUI extends JFrame {
 
     public DomineeringGUI(int size) {
         super("Domineering Game");
-        currentPosition = new DomineeringPosition(size);
+        currentPosition = new DomineeringPosition(size , HomePage.getSelectedcomplex());
         humanTurn = true;
 
         buttons = new JButton[size * size];
@@ -73,7 +73,7 @@ public class DomineeringGUI extends JFrame {
     }
 
     private void resetGame() {
-        currentPosition = new DomineeringPosition(currentPosition.size);
+        currentPosition = new DomineeringPosition(currentPosition.size , currentPosition.Complex);
         humanTurn = true;
 
         for (JButton button : buttons) {

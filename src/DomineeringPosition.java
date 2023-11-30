@@ -12,14 +12,17 @@ public class DomineeringPosition extends Position {
     int size ;
     int [] board ;// = new int[25]; //size²
 
+    int Complex ;
 
 
 
 
-    public DomineeringPosition(int size) {
+
+    public DomineeringPosition(int size , int cmpx) {
         this.size = size;
         this.board = new int[size * size];
         this.gameSearch = new Domineering();
+        this.Complex = cmpx ;
     }
 
   /*  public String toString() {
