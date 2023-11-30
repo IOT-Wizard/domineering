@@ -8,8 +8,6 @@ import java.io.*;
 
 
 
-
-
 public class BoardPage extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
@@ -216,7 +214,8 @@ public class BoardPage extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardPage domineeringGame = new BoardPage(Homepage.getSelectedSize());
+
+            BoardPage domineeringGame = new BoardPage(HomePage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });

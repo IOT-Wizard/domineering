@@ -215,7 +215,7 @@ public class BoardPage2 extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            BoardPage2 domineeringGame = new BoardPage2(Homepage.getSelectedPlayer());
+            BoardPage2 domineeringGame = new BoardPage2(HomePage.getSelectedPlayer());
             domineeringGame.setLocationRelativeTo(null);
             domineeringGame.setVisible(true);
         });
