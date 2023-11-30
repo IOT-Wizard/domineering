@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 
 public class BoardIA extends JFrame {
@@ -9,13 +11,18 @@ public class BoardIA extends JFrame {
     private DomineeringPosition currentPosition;
     private int boardSize;
     private boolean humanTurn;
+    private String Player_AI;
 
     private JButton[][] buttons;
     private Domineering gameSearch;
 
-    public BoardIA(String size) {
-        super("Domineering Game");
+    int HintH=3;
+    //int HintV=3;
 
+
+    public BoardIA(String size,String player,  Boolean load) {
+        super("Domineering Game");
+        Player_AI =player ;
         if (size != null && !size.isEmpty()) {
             boardSize = Integer.parseInt(size.substring(0, Math.min(size.length(), 1)));
         } else {
@@ -30,13 +37,19 @@ public class BoardIA extends JFrame {
         buttons = new JButton[boardSize][boardSize];
 
         initializeGUI(boardSize);
+
+        if(load)  loadGameLevel("game_level.txt"); // Load the game level at the start
     }
 
     private void initializeGUI(int size) {
-        setLayout(new GridLayout(size, size));
+        //setLayout(new GridLayout(size, size));
+        setSize(500, 600);
+
+
 
         JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(boardSize, boardSize));
+        gamePanel.setLayout(new GridLayout(size, size));
+
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 buttons[i][j] = new JButton("");
@@ -48,13 +61,14 @@ public class BoardIA extends JFrame {
                     }
                 });
                 buttons[i][j].setBackground(Color.white);
-                gamePanel.add(buttons[i][j]); // Add buttons to gamePanel instead of directly to the frame
+                gamePanel.add(buttons[i][j]);
             }
         }
 
+        // Create a panel to hold the buttons (Hint)
         JPanel buttonPanel = new JPanel();
         JButton hintButton = new JButton("Hint");
-        hintButton.addActionListener(e -> showHint());
+        hintButton.addActionListener(e -> showHint()); // Custom method for showing hints
 
         JButton newGameButton = new JButton("New Game");
         newGameButton.addActionListener(e -> startNewGame());
@@ -62,19 +76,30 @@ public class BoardIA extends JFrame {
         buttonPanel.add(hintButton);
         buttonPanel.add(newGameButton);
 
-        // Create a main panel to hold both the gamePanel and buttonPanel
+        // Create a main panel to hold the game panel and button panel vertically
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(gamePanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(gamePanel);
+        mainPanel.add(buttonPanel);
 
-        // Add the main panel to the frame
-        add(mainPanel);
+        // Add the main panel to the center of the frame
+        add(mainPanel, BorderLayout.CENTER);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack(); // Adjust the frame size based on its components
-        setLocationRelativeTo(null);
-        setVisible(true);
+        // Add a window listener to save the game level when the window is closed
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int option = JOptionPane.showConfirmDialog(BoardIA.this,
+                        "Voulez-vous sauvegarder la partie en cours avant de quitter?",
+                        "Confirmation",
+                        JOptionPane.YES_NO_CANCEL_OPTION);
+
+                if (option == JOptionPane.YES_OPTION) {
+                    saveGameLevel();
+                    System.exit(0);
+                }
+            }
+        });
     }
 
     private void handleButtonClick(int row, int col) {
@@ -159,10 +184,11 @@ public class BoardIA extends JFrame {
 
         for (int i = 0; i < boardSize - 1; i++) {
             for (int j = 0; j < boardSize - 1; j++) {
-                if (humanTurn) {  // Check if it's the human player's turn
-                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                if( HintH >0) {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i ][j+ 1].getBackground().equals(blankColor)) {
                         // Suggest a horizontal move
-                        suggestHint(i, j, i + 1, j);
+                        suggestHint(i, j, i , j+ 1);
+                        HintH--;
                         return;
                     }
                 }
@@ -179,14 +205,30 @@ public class BoardIA extends JFrame {
         buttons[row2][col2].setBackground(Color.YELLOW);
 
         // Display a hint message
-        //  JOptionPane.showMessageDialog(this, "You can place a domino here!");
+        // JOptionPane.showMessageDialog(this, "You can place a domino here!");
     }
 
     private void saveGameLevel() {
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("game_level.txt"))) {
+            writer.write(String.valueOf(boardSize));
+            writer.newLine();
+
+            // Save the player on the second line
+            writer.write(Player_AI);
+            writer.newLine();
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize; j++) {
-                    String cellState = buttons[i][j].getText().isEmpty() ? "E" : buttons[i][j].getText(); // "E" for empty
+                    String cellState;
+                    Color backgroundColor = buttons[i][j].getBackground();
+                    if (backgroundColor.equals(new Color(0x8D0808)) || backgroundColor.equals(new Color(0x070707))) {
+                        // Save the colors for non-empty cells (black or red)
+                        cellState = backgroundColor.equals(new Color(0x8D0808)) ? "H" : "V";
+                    } else {
+                        // Save "0" for empty cells
+                        cellState = "0";
+                    }
+
                     writer.write(cellState);
                 }
                 writer.newLine();
@@ -196,17 +238,45 @@ public class BoardIA extends JFrame {
         }
     }
 
-    private boolean loadGameLevel() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("game_level.txt"))) {
+    public boolean loadGameLevel(String fileName) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line ;
+
+            int currentLineNumber = 0;
+            while ((line = reader.readLine()) != null && currentLineNumber < 1) {
+                currentLineNumber++;
+
+                // Si la ligne actuelle est la ligne cible, imprimez-la
+                if (currentLineNumber == 2) {
+                    System.out.println("Ligne " + 2 + ": " + line);
+                }
+            }
+
             for (int i = 0; i < boardSize; i++) {
-                String line = reader.readLine();
+                line = reader.readLine();
+                System.out.println("Ligne " + 2 + ": " + line);
+
                 if (line != null) {
-                    for (int j = 0; j < Math.min(line.length(), boardSize); j++) {
+                    for (int j = 0; j < Math.min(line.length(), boardSize ); j++) {
                         String cellState = String.valueOf(line.charAt(j));
-                        buttons[i][j].setText(cellState);
+
+                        // Update the button based on the saved cellState
+                        if (cellState.equals("H")) {
+                            buttons[i][j].setBackground(new Color(0x8D0808));
+                            // buttons[i + 1][j].setBackground(new Color(0x8D0808));
+                        } else if (cellState.equals("V")) {
+                            buttons[i][j].setBackground(new Color(0x070707));
+                            //buttons[i][j + 1].setBackground(new Color(0x070707));
+                        } else {
+                            // "0" represents empty cells
+                            buttons[i][j].setBackground(Color.WHITE);
+                            // buttons[i][j + 1].setBackground(Color.WHITE);
+                            // buttons[i + 1][j].setBackground(Color.WHITE);
+                            //buttons[i + 1][j + 1].setBackground(Color.WHITE);
+                        }
 
                         // Enable or disable buttons based on cell state
-                        if (cellState.equals("E")) {
+                        if (cellState.equals("0")) {
                             buttons[i][j].setEnabled(true); // Enable empty cells
                         } else {
                             buttons[i][j].setEnabled(false); // Disable non-empty cells
@@ -222,31 +292,25 @@ public class BoardIA extends JFrame {
     }
 
 
+
     private void startNewGame() {
         int option = JOptionPane.showConfirmDialog(this,
-                "Do you want to start a new game without saving the current one?",
+                "start a new   game ?",
                 "Start New Game",
                 JOptionPane.YES_NO_OPTION);
 
         if (option == JOptionPane.YES_OPTION) {
-            // Check if there is a saved game and load it
-            if (loadGameLevel()) {
-                // If loading is successful, no need to clear the grid
-                return;
-            }
-
-            // Clear the game grid if there is no saved game or loading failed
-            for (int i = 0; i < boardSize; i++) {
-                for (int j = 0; j < boardSize; j++) {
-                    buttons[i][j].setText("");
-                }
-            }
+            dispose();
+            new HomePage() ;
         }
+
+
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardIA domineeringGame = new BoardIA("6");
+            BoardIA domineeringGame = new BoardIA(HomePage.getSelectedSize(), HomePage.getSelectedPlayer() , HomePage.getload());
             domineeringGame.setVisible(true);
         });
     }

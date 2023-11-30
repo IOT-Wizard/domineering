@@ -1,7 +1,11 @@
+import java.util.Vector;
+
 public class DomineeringPosition extends Position {
     final static public int BLANK = 0;
     final static public int HUMAN = 1;
     final static public int PROGRAM = -1;
+    private Domineering gameSearch;
+
 
 
 
@@ -15,13 +19,10 @@ public class DomineeringPosition extends Position {
     public DomineeringPosition(int size) {
         this.size = size;
         this.board = new int[size * size];
-    }
-    public DomineeringPosition() {
-        this.size = size;
-        this.board = new int[size * size];
+        this.gameSearch = new Domineering();
     }
 
-    public String toString() {
+  /*  public String toString() {
         StringBuffer sb = new StringBuffer("[");
         for (int i=0; i<25; i++) { // size * size //// size² -> ex : taille = 5  ->  5² = 25 places
 
@@ -31,40 +32,54 @@ public class DomineeringPosition extends Position {
         return sb.toString();
 
 
+    }*/
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < size * size; i++) {
+            sb.append(board[i]).append(",");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
-    public boolean wonPosition( int player) {
+
+    public boolean wonPosition(int player) {
         boolean ret = true;
 
-        if(player == PROGRAM){ // 19 20 21 22 23
-            for (int i = 0; i < 20; i++) {   // (int i = 0; i < pos.size * pos.size; i++) 💱
-                if (i == 20 || i == 21 || i == 22|| i == 23|| i == 24) // Non traite a suprrimer LOL car i esr tjrs <20 🙂🙂🙂
+        if (player == PROGRAM) {
+            for (int i = 0; i < size * size; i++) {
+                if (i % size == size - 1) // Skip the last column
                     continue;
-
-                else {
-                    if (board[i] == DomineeringPosition.BLANK && board[i+5] == DomineeringPosition.BLANK) {
-                        ret = false;
-                        break;
-                    }
+                if (board[i] == DomineeringPosition.BLANK && board[i + 1] == DomineeringPosition.BLANK) {
+                    ret = false;
+                    break;
                 }
             }
         }
 
-        if(player == HUMAN){
-            for (int i = 0; i < 24; i++) { // 4 9 14 18 23 // (int i = 0; i < pos.size * (pos.size - 1); i++) 💱
-                if (i == 4 || i == 9 || i == 14 || i == 19|| i == 24) //  (i % pos.size == pos.size - 1) 💱 i % pos.size == pos.size - 1 = 4 dans ce cas 📑Math 🤖
+        if (player == HUMAN) {
+            for (int i = 0; i < size * (size - 1); i++) {
+                if (i % size == size - 1) // Skip the last column
                     continue;
-                else {
-                    if (board[i] == DomineeringPosition.BLANK && board[i+1] == DomineeringPosition.BLANK) {
-                        ret = false;
-                        break;
-                    }
+                if (board[i] == DomineeringPosition.BLANK && board[i + 1] == DomineeringPosition.BLANK) {
+                    ret = false;
+                    break;
                 }
             }
         }
 
-        if (GameSearch.DEBUG) System.out.println("     ret="+ret);
+        if (GameSearch.DEBUG) System.out.println("     ret=" + ret);
         return ret;
+    }
+
+    public void makeProgramMove() {
+        Vector v = gameSearch.alphaBeta(0, this, GameSearch.PROGRAM);
+        Position newPosition = (Position) v.elementAt(1);
+
+        if (newPosition != null) {
+            this.board = ((DomineeringPosition) newPosition).board;
+        }
     }
 
 }

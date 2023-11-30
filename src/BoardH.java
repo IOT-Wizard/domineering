@@ -8,10 +8,10 @@ import java.io.*;
 public class BoardH extends JFrame {
     private JButton[][] buttons;
     private String currentPlayer;
-    private int  boardSize;
-    int HintH =3;
-    int HintV =3;
+    private int boardSize;
 
+    int HintH=3;
+    int HintV=3;
 
     public BoardH(String selectedSize , String player ,Boolean load) {
         boardSize = Integer.parseInt(selectedSize.substring(0, 1));
@@ -120,12 +120,8 @@ public class BoardH extends JFrame {
                     if (currentPlayer == "H")  JOptionPane.showMessageDialog(getParent(), " player 1 win ");
                     if (currentPlayer == "Human")  JOptionPane.showMessageDialog(getParent(), " player 2 win ");
                     dispose();
-                    new Homepage() ;
+                    new HomePage() ;
 
-                    // SwingUtilities.getWindowAncestor(getParent()).dispose();
-                    //frame.dispose();
-                   dispose();
-                    new Homepage() ;
 
                 }
 
@@ -142,10 +138,10 @@ public class BoardH extends JFrame {
             Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
 
             if (currentPlayer.equals("H") && (backgroundColor.equals(blankColor) || backgroundColor.equals(Color.YELLOW) ) &&
-                    (buttons[row + 1][col].getBackground().equals(blankColor) || buttons[row + 1][col].getBackground().equals(Color.yellow)) ) {
+                    buttons[row + 1][col].getBackground().equals(blankColor)   ) {
                 return true;
             } else if (currentPlayer.equals("Human") &&( backgroundColor.equals(blankColor) || backgroundColor.equals(Color.YELLOW)) &&
-                    ( buttons[row][col + 1].getBackground().equals(blankColor)|| buttons[row][col + 1].getBackground().equals(Color.yellow)) ) {
+                    buttons[row][col + 1].getBackground().equals(blankColor)) {
                 return true;
             }
         }
@@ -185,23 +181,20 @@ public class BoardH extends JFrame {
         for (int i = 0; i < boardSize-1; i++) {
             for (int j = 0; j < boardSize-1; j++) {
                 if (currentPlayer == "H" && HintH >0 ) {
-                    if( HintH >0) {
-                        if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
-                            // Suggest a horizontal move
-                            suggestHint(i, j, i + 1, j);
-                            HintH--;
-                            return;
-                        }
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                        // Suggest a horizontal move
+                        suggestHint(i, j, i + 1, j);
+                        HintH--;
+                        return;
                     }
                 } if (currentPlayer == "Human" && HintV >0 ) {
-                     if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
-                            // Suggest a vertical move
-                            suggestHint(i, j, i, j + 1);
-                            HintV --;
-                            return;
-                        }
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i][j + 1].getBackground().equals(blankColor)) {
+                        // Suggest a vertical move
+                        suggestHint(i, j, i, j + 1);
+                        HintV --;
+                        return;
+                    }
                 }
-
 
             }
         }
@@ -215,7 +208,7 @@ public class BoardH extends JFrame {
         buttons[row2][col2].setBackground(Color.YELLOW);
 
         // Display a hint message
-      //  JOptionPane.showMessageDialog(this, "You can place a domino here!");
+        JOptionPane.showMessageDialog(this, "You can place a domino here!");
     }
 
 
@@ -274,15 +267,15 @@ public class BoardH extends JFrame {
                         // Update the button based on the saved cellState
                         if (cellState.equals("H")) {
                             buttons[i][j].setBackground(new Color(0x8D0808));
-                           // buttons[i + 1][j].setBackground(new Color(0x8D0808));
+                            // buttons[i + 1][j].setBackground(new Color(0x8D0808));
                         } else if (cellState.equals("V")) {
                             buttons[i][j].setBackground(new Color(0x070707));
                             //buttons[i][j + 1].setBackground(new Color(0x070707));
                         } else {
                             // "0" represents empty cells
                             buttons[i][j].setBackground(Color.WHITE);
-                           // buttons[i][j + 1].setBackground(Color.WHITE);
-                           // buttons[i + 1][j].setBackground(Color.WHITE);
+                            // buttons[i][j + 1].setBackground(Color.WHITE);
+                            // buttons[i + 1][j].setBackground(Color.WHITE);
                             //buttons[i + 1][j + 1].setBackground(Color.WHITE);
                         }
 
@@ -314,7 +307,7 @@ public class BoardH extends JFrame {
 
         if (option == JOptionPane.YES_OPTION) {
             dispose();
-            new Homepage() ;
+            new HomePage() ;
         }
 
 
@@ -323,8 +316,8 @@ public class BoardH extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardH domineeringGame = new BoardH(Homepage.getSelectedSize() , Homepage.getSelectedPlayer() , Homepage.getload()) ;
+            BoardH domineeringGame = new BoardH(HomePage.getSelectedSize() , HomePage.getSelectedPlayer() , HomePage.getload()) ;
             domineeringGame.setVisible(true);
-   });
-}
+        });
+    }
 }
