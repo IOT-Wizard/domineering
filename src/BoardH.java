@@ -205,7 +205,7 @@ public class BoardH extends JFrame {
         }
 
         // If no valid move is found, provide a generic hint
-        JOptionPane.showMessageDialog(this, "No valid moves available.");
+        JOptionPane.showMessageDialog(this, "demander de l'aide  est epuisee :>");
     }
 
     private void suggestHint(int row1, int col1, int row2, int col2) {
