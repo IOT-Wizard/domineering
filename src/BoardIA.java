@@ -11,17 +11,18 @@ public class BoardIA extends JFrame {
     private DomineeringPosition currentPosition;
     private int boardSize;
     private boolean humanTurn;
+    private String Player_AI;
 
     private JButton[][] buttons;
     private Domineering gameSearch;
 
     int HintH=3;
-    int HintV=3;
+    //int HintV=3;
 
 
-    public BoardIA(String size, Boolean load) {
+    public BoardIA(String size,String player,  Boolean load) {
         super("Domineering Game");
-
+        Player_AI =player ;
         if (size != null && !size.isEmpty()) {
             boardSize = Integer.parseInt(size.substring(0, Math.min(size.length(), 1)));
         } else {
@@ -44,12 +45,7 @@ public class BoardIA extends JFrame {
         //setLayout(new GridLayout(size, size));
         setSize(500, 600);
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                startNewGame();
-            }
-        });
+
 
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(size, size));
@@ -188,14 +184,13 @@ public class BoardIA extends JFrame {
 
         for (int i = 0; i < boardSize - 1; i++) {
             for (int j = 0; j < boardSize - 1; j++) {
-                if (humanTurn && HintH > 0) {
-                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i + 1][j].getBackground().equals(blankColor)) {
+                if( HintH >0) {
+                    if (buttons[i][j].getBackground().equals(blankColor) && buttons[i ][j+ 1].getBackground().equals(blankColor)) {
                         // Suggest a horizontal move
-                        suggestHint(i, j, i + 1, j);
+                        suggestHint(i, j, i , j+ 1);
                         HintH--;
                         return;
                     }
-
                 }
             }
         }
@@ -205,13 +200,12 @@ public class BoardIA extends JFrame {
     }
 
 
-
     private void suggestHint(int row1, int col1, int row2, int col2) {
         buttons[row1][col1].setBackground(Color.YELLOW);
         buttons[row2][col2].setBackground(Color.YELLOW);
 
         // Display a hint message
-        JOptionPane.showMessageDialog(this, "You can place a domino here!");
+        // JOptionPane.showMessageDialog(this, "You can place a domino here!");
     }
 
     private void saveGameLevel() {
@@ -221,7 +215,7 @@ public class BoardIA extends JFrame {
             writer.newLine();
 
             // Save the player on the second line
-            writer.write(String.valueOf(humanTurn));
+            writer.write(Player_AI);
             writer.newLine();
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize; j++) {
@@ -229,7 +223,7 @@ public class BoardIA extends JFrame {
                     Color backgroundColor = buttons[i][j].getBackground();
                     if (backgroundColor.equals(new Color(0x8D0808)) || backgroundColor.equals(new Color(0x070707))) {
                         // Save the colors for non-empty cells (black or red)
-                        cellState = backgroundColor.equals(new Color(0x8D0808)) ? "H" : "P";
+                        cellState = backgroundColor.equals(new Color(0x8D0808)) ? "H" : "V";
                     } else {
                         // Save "0" for empty cells
                         cellState = "0";
@@ -294,7 +288,6 @@ public class BoardIA extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
             return false; // Loading failed
-            //rds
         }
     }
 
@@ -317,7 +310,7 @@ public class BoardIA extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            BoardIA domineeringGame = new BoardIA(HomePage.getSelectedSize(),  HomePage.getload());
+            BoardIA domineeringGame = new BoardIA(HomePage.getSelectedSize(), HomePage.getSelectedPlayer() , HomePage.getload());
             domineeringGame.setVisible(true);
         });
     }

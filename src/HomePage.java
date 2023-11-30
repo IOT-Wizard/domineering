@@ -41,15 +41,19 @@ public class HomePage {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Redirect to BoardPage when the button is clicked
-                player = (String)choiceComboBox.getSelectedItem();
+                player = (String) choiceComboBox.getSelectedItem();
                 selectedSize = (String) sizeComboBox.getSelectedItem();
+
+                // Debug statements
+                System.out.println("Selected Player: " + player);
+                System.out.println("Selected Size: " + selectedSize);
+
                 if (selectedSize != null) {
                     frame.dispose();
-                    if (player=="HUMAN") {
-                        new BoardH(selectedSize, player , load).setVisible(true);
-
-                    }else{
-                        new BoardIA( selectedSize, load).setVisible(true);
+                    if ("Human".equals(player)) {  // Use equals() for string comparison
+                        new BoardH(selectedSize, player, load).setVisible(true);
+                    } else {
+                        new BoardIA(selectedSize, player, load).setVisible(true);
                     }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Please select a board size.");
@@ -77,17 +81,30 @@ public class HomePage {
         sizePanel.add(sizeComboBox);
 
 
+        sizeComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedSize = (String) sizeComboBox.getSelectedItem();
+                if (selectedSize != null) {
+                    // Transférer la taille sélectionnée à BoardPage
+                    System.out.println(selectedSize);
+
+                }
+
+            }
+        });
+
 
 
 
         choiceComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedSize = (String) sizeComboBox.getSelectedItem();
-                if (selectedSize != null) {
+                String player = (String) choiceComboBox.getSelectedItem();
+                if (player != null) {
                     // Transférer la taille sélectionnée à BoardPage
-                    new BoardH(selectedSize , player, load );
-                    //new BoardIA(selectedSize,load);
+                    System.out.println(player);
+
                 }
 
             }
@@ -185,10 +202,9 @@ public class HomePage {
 
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new HomePage();
-            }});
+        SwingUtilities.invokeLater(() -> {
+            HomePage homepage = new HomePage();
+            homepage.startSavedGame(); // Call the method to check for saved games at the beginning
+        });
     }
 }
