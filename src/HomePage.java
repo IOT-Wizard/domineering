@@ -68,7 +68,7 @@ public class HomePage {
 
 
         // Add combo box for human or AI choice
-        String[] choices = {"Human", "AI", "AIlvl1", "AIlvl2"};
+        String[] choices = {"Human", "AI lvl1", "AI lvl2", "AI lvl3"};
         choiceComboBox = new JComboBox<>(choices);
         choiceComboBox.setPreferredSize(new Dimension(90, 30));
 
@@ -136,6 +136,15 @@ public class HomePage {
         frame.setVisible(true);
 
     }
+    public static int getSelectedcomplex() {
+        if (player =="AI lvl1")         return 5;
+
+        if (player =="AI lvl2")        return 6;
+
+        if (player =="AI lvl3")        return 8;
+        return  5;
+
+    }
     public static String getSelectedSize() {
         return selectedSize;
     }
@@ -146,10 +155,10 @@ public class HomePage {
     public static boolean getload(){
         return load;
     }
-    private boolean loadGame(String fileName , int boardSize , String p) {
-        BoardH board = new BoardH(String.valueOf(boardSize), p , false);
-        return board.loadGameLevel(fileName);
-    }
+    // private boolean loadGame(String fileName , int boardSize , String p) {
+    //     BoardH board = new BoardH(String.valueOf(boardSize), p , false);
+    //     return board.loadGameLevel(fileName);
+    // }
 
     private void startSavedGame() {
         int option = JOptionPane.showConfirmDialog(
@@ -176,8 +185,15 @@ public class HomePage {
                         System.out.println("Player: " + player + ", Board Size: " + boardSize);
                         frame.dispose();
                         // Create the BoardH instance
-                        BoardH board =new BoardH(String.valueOf(boardSize), player, load);
-                        board.setVisible(true);
+                        if (player =="Human") {
+                            BoardH board = new BoardH(String.valueOf(boardSize), player, load);
+                            board.setVisible(true);
+                        }else {
+                            BoardIA board = new BoardIA(String.valueOf(boardSize), player, load);
+                            board.setVisible(true);
+                        }
+                        load = false ;
+
 
                         // Uncomment the following block if the 'loadGame' method is defined
                     /*

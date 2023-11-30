@@ -30,7 +30,7 @@ public class BoardIA extends JFrame {
             boardSize = 5;
         }
 
-        currentPosition = new DomineeringPosition(boardSize);
+        currentPosition = new DomineeringPosition(boardSize ,HomePage.getSelectedcomplex() );
         humanTurn = true;
         gameSearch = new Domineering();
 
@@ -174,7 +174,7 @@ public class BoardIA extends JFrame {
     }
 
     private void resetGame() {
-        currentPosition = new DomineeringPosition(currentPosition.size);
+        currentPosition = new DomineeringPosition(currentPosition.size , HomePage.getSelectedcomplex());
         humanTurn = true;
 
         for (int i = 0; i < currentPosition.size; i++) {
