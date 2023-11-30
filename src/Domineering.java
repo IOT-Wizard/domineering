@@ -47,20 +47,21 @@ public class Domineering extends GameSearch {
         return false;
     }
 
+    @Override
     public float positionEvaluation(Position p, boolean player) {
         int count = 0;
         DomineeringPosition pos = (DomineeringPosition)p;
-        for (int i=0; i<pos.size * pos.size ; i++) {
-            if (pos.board[i] == 0) count++;
+        for (int i=0; i<pos.size * pos.size - pos.size; i++) {
+            if (pos.board[i] == 0 && pos.board[i+pos.size] == 0) count++;
         }
         count = 10 - count;
         // prefer the center square:
         float base = 1.0f;
-        if (pos.board[4] == DomineeringPosition.HUMAN &&
+        if (pos.board[pos.size*pos.size/2] == DomineeringPosition.HUMAN &&
                 player) {
             base += 0.4f;
         }
-        if (pos.board[4] == DomineeringPosition.PROGRAM &&
+        if (pos.board[pos.size*pos.size/2] == DomineeringPosition.PROGRAM &&
                 !player) {
             base -= 0.4f;
         }
@@ -73,6 +74,56 @@ public class Domineering extends GameSearch {
         }
         return ret;
     }
+
+   /* @Override
+    public float positionEvaluation(Position p, boolean player) {
+        DomineeringPosition dp = (DomineeringPosition) p;
+        int[] table = dp.board;
+        int size = dp.size;
+        int countPlayer1;
+        int countPlayer2;
+        float result;
+
+        countPlayer1 = numberOfHorizontalPos(table, size);
+        countPlayer2 = numberOfVerticalPos(table, size);
+
+        result = countPlayer1 - countPlayer2;
+        if (player) {
+            return result;
+        } else {
+            return -result;
+        }
+    }
+
+    public int numberOfVerticalPos(int[] table, int size) {
+        int ret = 0;
+        for (int i = 0; i < size - 1; i++) {
+            for (int j = 0; j < size; j++) {
+                if (table[i * size + j] == DomineeringPosition.BLANK &&
+                        table[(i + 1) * size + j] == DomineeringPosition.BLANK) {
+                    ret++;
+                }
+            }
+        }
+        return ret;
+    }
+
+    public int numberOfHorizontalPos(int[] table, int size) {
+        int ret = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size - 1; j++) {
+                if (table[i * size + j] == DomineeringPosition.BLANK &&
+                        table[i * size + j + 1] == DomineeringPosition.BLANK) {
+                    ret++;
+                }
+            }
+        }
+        return ret;
+    }
+*/
+
+
+
     public void printPosition(Position p) {
         System.out.println("Board position:");
         DomineeringPosition pos = (DomineeringPosition)p;

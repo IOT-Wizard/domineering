@@ -130,14 +130,32 @@ public class BoardIA extends JFrame {
         return currentPosition.wonPosition(player);
     }
 
-    private void makeProgramMove() {
+   /* private void makeProgramMove() {
         currentPosition.makeProgramMove();
         updateGUI();
         if (checkWin(DomineeringPosition.PROGRAM)) {
             JOptionPane.showMessageDialog(this, "Program won!");
             resetGame();
         }
-    }
+    }*/
+   private void makeProgramMove() {
+       currentPosition.makeProgramMove();
+       updateGUI();
+
+       // Switch the turn to the human player
+       humanTurn = true;
+
+       if (checkWin(DomineeringPosition.PROGRAM)) {
+           JOptionPane.showMessageDialog(this, "Program won!");
+           resetGame();
+       }
+   }
+
+
+
+
+
+
 
     private void updateGUI() {
         for (int i = 0; i < currentPosition.size; i++) {
@@ -179,6 +197,7 @@ public class BoardIA extends JFrame {
         return false;
     }
 
+
     private void showHint() {
         Color blankColor = Color.WHITE; // Adjust this to the actual background color of blank buttons
 
@@ -198,6 +217,7 @@ public class BoardIA extends JFrame {
         // If no valid move is found, provide a generic hint
         JOptionPane.showMessageDialog(this, "No valid moves available.");
     }
+
 
 
     private void suggestHint(int row1, int col1, int row2, int col2) {

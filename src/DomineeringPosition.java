@@ -4,6 +4,7 @@ public class DomineeringPosition extends Position {
     final static public int BLANK = 0;
     final static public int HUMAN = 1;
     final static public int PROGRAM = -1;
+    public static int EMPTY;
     private Domineering gameSearch;
 
 
@@ -81,5 +82,8 @@ public class DomineeringPosition extends Position {
             this.board = ((DomineeringPosition) newPosition).board;
         }
     }
+
+
+
 
 }
