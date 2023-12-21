@@ -188,7 +188,7 @@ public class Domineering extends GameSearch {
         int count = 0;
 
         for (int i = 0; i < pos.size * pos.size - pos.size; i++) {
-            if (i + pos.size < pos.size * pos.size  && pos.board[i] == 0 && pos.board[i + pos.size] == 0) {
+            if (i + pos.size < pos.size * pos.size && pos.board[i] == 0 && pos.board[i + pos.size] == 0) {
                 count++;
             }
         }
@@ -201,13 +201,13 @@ public class Domineering extends GameSearch {
         count = 0;
 
         for (int i = 0; i < pos.size * pos.size - pos.size; i++) {
-            if (i + pos.size  < pos.size * pos.size  && pos.board[i] == 0 && pos.board[i + pos.size] == 0) {
+            if (i + pos.size < pos.size * pos.size && pos.board[i] == 0 && pos.board[i + pos.size] == 0) {
                 DomineeringPosition pos2 = new DomineeringPosition();
-                pos2.board = Arrays.copyOf(pos.board, pos.size * pos.size );
+                pos2.board = Arrays.copyOf(pos.board, pos.size * pos.size);
 
                 if (player) {
                     pos2.board[i] = 1;
-                    pos2.board[i + pos.size ] = 1;
+                    pos2.board[i + pos.size] = 1;
                 } else {
                     pos2.board[i] = -1;
                     pos2.board[i + pos.size] = -1;

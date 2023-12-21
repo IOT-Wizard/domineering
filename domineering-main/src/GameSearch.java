@@ -65,9 +65,9 @@ public abstract class GameSearch {
         Position [] moves = possibleMoves(p, player);
         for (int i=0; i<moves.length; i++) {
             Vector v2 = alphaBetaHelper(depth + 1, moves[i], !player, -beta, -alpha);
-            if (v2 == null || v2.size() < 1) continue;
+            //  if (v2 == null || v2.size() < 1) continue;
             float value = -((Float)v2.elementAt(0)).floatValue();
-            if (value >= beta) { // Prune the branch
+            if (value > beta) {
                 if(GameSearch.DEBUG) System.out.println(" ! ! ! value="+value+", beta="+beta);
                 beta = value;
                 best = new Vector();
@@ -78,17 +78,14 @@ public abstract class GameSearch {
                     Object o = enum2.nextElement();
                     if (o != null) best.addElement(o);
                 }
-                break; // No need to explore further since beta has been updated
-            } else if (value > alpha) { // Update alpha
-                alpha = value;
-                best = new Vector();
-                best.addElement(moves[i]);
-                Enumeration enum2 = v2.elements();
-                enum2.nextElement(); // skip previous value
-                while (enum2.hasMoreElements()) {
-                    Object o = enum2.nextElement();
-                    if (o != null) best.addElement(o);
-                }
+            }
+            /**
+             * Use the alpha-beta cutoff test to abort search if we
+             * found a move that proves that the previous move in the
+             * move chain was dubious
+             */
+            if (beta >= alpha) {
+                break;
             }
         }
         Vector v3 = new Vector();

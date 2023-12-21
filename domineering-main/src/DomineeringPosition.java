@@ -20,10 +20,22 @@ public class DomineeringPosition extends Position {
 
 
     public DomineeringPosition() {
-        this.size =Integer.parseInt(HomePage.getSelectedSize().substring(0, 1));
+        String selectedSize = HomePage.getSelectedSize();
+        if (selectedSize != null && !selectedSize.isEmpty()) {
+            this.size = Integer.parseInt(selectedSize.substring(0, Math.min(selectedSize.length(), 1)));
+        } else {
+            System.out.println("Taille invalide. Utilisation de la taille par défaut.");
+            this.size = 5; // Set a default size if the selected size is null or empty
+        }
         this.board = new int[size * size];
         this.gameSearch = new Domineering();
-        //this.Complex = cmpx ;
+        // this.Complex = HomePage.getSelectedcomplex(); // Uncomment if you have a selectedComplex method
+    }
+    public DomineeringPosition(int Size ,int  comptx) {
+        this.size =Size;
+        this.board = new int[size * size];
+        this.gameSearch = new Domineering();
+        this.Complex = comptx;
     }
 
   /*  public String toString() {

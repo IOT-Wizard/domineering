@@ -161,7 +161,8 @@ public class BoardH extends JFrame {
                     }
                 }
             }
-        } else {
+        }
+        else {
             for (int i = 0; i < boardSize; i++) {
                 for (int j = 0; j < boardSize - 1; j++) {
                     if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) && (buttons[i][j + 1].getBackground().equals(blankColor) || buttons[i][j + 1].getBackground().equals(Color.YELLOW))) {

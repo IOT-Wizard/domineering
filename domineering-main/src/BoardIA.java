@@ -31,8 +31,17 @@ public class BoardIA extends JFrame {
             System.out.println("Taille invalide. Utilisation de la taille par défaut.");
             boardSize = 5;
         }
+        if (load){
+            int cmptx = 5;
+            if ("IA niveau 1".equals(player)) cmptx = 5;
+            if ("IA niveau 2".equals(player)) cmptx =  6;
+            if ("IA niveau 3".equals(player)) cmptx =  8;
 
-        currentPosition = new DomineeringPosition();
+            currentPosition = new DomineeringPosition( Integer.parseInt(size.substring(0, Math.min(size.length(), 1))) , cmptx );
+        }else {
+            currentPosition = new DomineeringPosition();
+
+        }
         humanTurn = true;
         gameSearch = new Domineering();
 
@@ -116,10 +125,11 @@ public class BoardIA extends JFrame {
             currentPosition.board[row * currentPosition.size + col] = DomineeringPosition.HUMAN;
             currentPosition.board[row * currentPosition.size + col + 1] = DomineeringPosition.HUMAN;
 
-            if (checkWin(DomineeringPosition.HUMAN) || checkWinUI(1)) {
+            if (checkWinUI("Human")) {
                 JOptionPane.showMessageDialog(this, "Le joueur humain a gagné !");
                 dispose();
                 new HomePage();
+                return;
             }
 
             // Changer de tour et laisser le programme jouer
@@ -128,7 +138,7 @@ public class BoardIA extends JFrame {
             humanTurn = true;
 
             // Vérifier s'il y a une victoire après le tour du programme
-            if (checkWin(DomineeringPosition.PROGRAM) || checkWinUI(0)) {
+            if (checkWinUI("Prog")) {
                 JOptionPane.showMessageDialog(this, "Le programme a gagné !");
                 dispose();
                 new HomePage();
@@ -140,25 +150,24 @@ public class BoardIA extends JFrame {
     private boolean checkWin(int player) {
         return currentPosition.wonPosition(player);
     }
-    private boolean checkWinUI(int player) {
+    private boolean checkWinUI(String player) {
         Color blankColor = Color.WHITE;
 
-        if (player == 0) {
-            for (int i = 0; i < boardSize - 1; i++) {
+        if (player.equals("Human")) {
+            for (int i = 0; i < boardSize - 1 ; i++) {
                 for (int j = 0; j < boardSize; j++) {
                     if (i == 4) {
                         continue;
-                    } else if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) ||
-                            (buttons[i + 1][j].getBackground().equals(blankColor) || buttons[i + 1][j].getBackground().equals(blankColor))) {
+                    } else if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) && (buttons[i + 1][j].getBackground().equals(blankColor) || buttons[i + 1][j].getBackground().equals(blankColor))) {
                         return false;
                     }
                 }
             }
-        } else {
-            for (int i = 0; i < boardSize; i++) {
-                for (int j = 0; j < boardSize - 1; j++) {
-                    if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) ||
-                            (buttons[i][j + 1].getBackground().equals(blankColor) || buttons[i][j + 1].getBackground().equals(Color.YELLOW))) {
+        }
+        if (player.equals("Prog")) {
+            for (int i = 0; i < boardSize ; i++) {
+                for (int j = 0; j < boardSize  - 1; j++) {
+                    if ((buttons[i][j].getBackground().equals(blankColor) || buttons[i][j].getBackground().equals(Color.YELLOW)) && (buttons[i][j + 1].getBackground().equals(blankColor) || buttons[i][j + 1].getBackground().equals(Color.YELLOW))) {
                         return false;
                     }
                 }
@@ -196,10 +205,12 @@ public class BoardIA extends JFrame {
         }
 
         // Afficher un message si le programme a gagné
+        /*
         if (checkWin(DomineeringPosition.PROGRAM)) {
             JOptionPane.showMessageDialog(this, "Le programme a gagné !");
             resetGame();
         }
+        */
     }
 
     // Méthode pour réinitialiser le jeu
